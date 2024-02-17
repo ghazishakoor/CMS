@@ -1,0 +1,70 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            .wrapper {
+            min-height: 100vh; /* Set minimum height to occupy the full viewport height */
+            display: flex;
+            flex-direction: column;
+            }
+
+            /* Set main content to grow and occupy remaining space */
+            .main-content {
+            flex: 1;
+            }
+
+            table tr th {
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            table thead tr th {
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+
+
+            .profile-pic {
+                max-width: 100px;
+                max-height: 100px;
+                margin: 0 auto;
+                border-radius: 10%;
+            }
+
+            .profile-pic-lg {
+                max-width: 200px;
+                max-height: 200px;
+
+                border-radius: 10%;
+            }
+        </style>
+        <title>Student Management System</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    </head>
+    <body class="wrapper">
+        
+        {% include 'cmsmain/navbar.html' %}
+
+        <div class="main-content">
+            {% block content %}
+
+
+            {% endblock %}
+        </div>
+        <footer>
+            <div class="text-center py-3">
+                <hr />
+                <span>
+                    Copyright &copy; <script>document.write(new Date().getFullYear())</script> Ghazi's Software
+                </span>
+            </div>
+        </footer>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    
+</html>

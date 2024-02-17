@@ -1,0 +1,42 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="m-4 text-center">Student Details</h3>
+   
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col col-md-5">
+            <h4 class="text-center">{{student}}</h4>
+            <hr />
+            <div class="text-center">
+                <img class="profile-pic-lg" src="{{student.picture.url}}">
+            </div>
+            <hr />
+                        
+            <table class="table">
+                <tr><th>STUDENT</th>
+                <tr><td>Name: <strong>{{student}}</strong></td></tr>
+                <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
+                <tr><td>Subjects: <strong>
+                        {% for subject in subjects %}
+                            {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}</strong>
+                </td></tr>
+                <tr><td>Phone: <strong>{{student.phone}}</strong></td></tr>
+                <tr><td>Nationality: <strong>{{student.nationality}}</strong></td></tr>
+                <tr><td>Passport Number: <strong>{{student.passport_number}}</strong></td></tr>
+                <tr><td>Email: <strong>{{student.email}}</strong></td></tr>
+                <tr><td>Enrolment Date: <strong>{{student.enrolment_date}}</strong></td></tr>
+            </table>
+ 
+            <a href="/student_list/" class="btn btn-primary float-end" role="button">Home</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

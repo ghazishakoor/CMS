@@ -1,0 +1,27 @@
+{% extends "cmsmain/base.html" %}
+
+{% block content %}
+
+<h3 class="text-center m-4"> Add Student</h3>
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <div class="card bg-light mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-address-card fa-lg"></i> Student Registration
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+

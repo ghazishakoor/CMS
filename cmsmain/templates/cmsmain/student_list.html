@@ -1,0 +1,37 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h1 class="text-center mt-2">Student Management System</h1>
+<hr class="mt-0 mb-4">
+<div class="d-flex justify-content-center">
+<div class="row">
+    <div class="col col-md">
+        <div class="card card-body">
+            <table class="table">
+                <tr>
+                    <th> Student</th>
+                    <th> Date of Birth</th>
+                    <th> Nationality</th>
+                    <th> Picture </th>
+                    <th> Action </th>
+                </tr>
+                {% for student in student_list %}
+                    <tr>
+                        <td> {{student}} </td>
+                        <td> {{student.date_of_birth}} </td>
+                        <td> {{student.nationality}} </td>
+                        <td> <img class="profile-pic" src="{{student.picture.url}}"></td>
+                        <td> <a class="btn btn-primary" href="{% url 'student_detail' student.id %}">Detail</a></td>    
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}
