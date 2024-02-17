@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<h1 class="text-center mt-2">Student Management</h1>
+<h1 class="text-center mt-2">Teacher Management</h1>
 <hr class="mt-0 mb-2">
 <div class="d-flex justify-content-center">
 <div class="row">
@@ -12,22 +12,20 @@
         <div class="card card-body">
             <table class="table">
                 <tr>
-                    <th> Student</th>
-                    <th> Date of Birth</th>
-                    <th> Nationality</th>
-                    <th> Picture </th>
+                    <th> Teacher</th>
+                    <th> Phone</th>
+                    <th> Email</th>
                     <th> Action </th>
                 </tr>
-                {% for student in student_list %}
+                {% for teacher in teacher_list %}
                     <tr>
-                        <td> {{student}} </td>
-                        <td> {{student.date_of_birth}} </td>
-                        <td> {{student.nationality}} </td>
-                        <td> <img class="profile-pic" src="{{student.picture.url}}"></td>
+                        <td> {{teacher}} </td>
+                        <td> {{teacher.phone}} </td>
+                        <td> {{teacher.email}} </td>
                         <td> 
-                            <a class="btn btn-success btn-sm" href="{% url 'student_detail' student.id %}">Detail</a>
-                            <a class="btn btn-info btn-sm" href="{% url 'student_update' student.id %}">Update</a>
-                            <a class="btn btn-danger btn-sm" href="{% url 'student_delete' student.id %}">Delete</a>
+                            <a class="btn btn-success btn-sm" href="{% url 'teacher_detail' teacher.id %}">Detail</a>
+                            <a class="btn btn-info btn-sm" href="{% url 'teacher_update' teacher.id %}">Update</a>
+                            <a class="btn btn-danger btn-sm" href="{% url 'teacher_delete' teacher.id %}">Delete</a>
                         </td>    
                     </tr>
                 {% endfor %}

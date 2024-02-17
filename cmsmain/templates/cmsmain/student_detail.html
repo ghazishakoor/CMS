@@ -4,8 +4,8 @@
 {% block content %}
 
 
-<h3 class="m-4 text-center">Student Details</h3>
-   
+<h3 class="mt-2 text-center">Student Details</h3>
+<hr />
 
 <div class="container">
     <div class="row justify-content-center">
@@ -18,7 +18,8 @@
             <hr />
                         
             <table class="table">
-                <tr><th>STUDENT</th>
+                <tr><th>STUDENT</th></tr>
+                <tr><td>Student Number: <strong>{{student.student_number}}</strong></td></tr>
                 <tr><td>Name: <strong>{{student}}</strong></td></tr>
                 <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
                 <tr><td>Subjects: <strong>
