@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'cmsmain',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -125,5 +127,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#login settings
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = '/custom_page/'
+
+#logout settings
+LOGOUT_URL = "/auth/logout/"
+LOGOUT_REDIRECT_URL = '/auth/login/'
+
+#EMAIL SETTINGS
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

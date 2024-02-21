@@ -62,6 +62,7 @@ class Term(models.Model):
 
 
 class Assignment(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -76,9 +77,13 @@ class AssignMark(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     mark = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    def __str__(self):
+        return f'{self.student} - {self.assignment}'
 
 
 class Exam(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -103,3 +108,11 @@ class Report(models.Model):
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
     grade = models.DecimalField(max_digits=5, decimal_places=2)
     remarks = models.TextField()
+
+class Program(models.Model):
+    program_code = models.CharField(max_length=20)
+    program_name = models.CharField(max_length=50)
+    subjects = models.ManyToManyField(Subject)
+    
+    def __str__(self):
+        return self.program_name

@@ -4,7 +4,13 @@ from django.conf.urls.static import static
 
 from . import views
 
+
 urlpatterns = [
+    path('', views.HomeView.as_view(), name='home'),
+    path('student_page/', views.StudentPage, name='student_page'),
+    path('teacher_page/', views.TeacherPage, name='teacher_page'),
+    path('admin_page/', views.AdminPage, name='admin_page'),
+    path('custom_page/', views.custom_redirect, name='custom_page'),
     path('student_list/', views.StudentListView.as_view(), name='student_list'),
     path('student_detail/<int:pk>/', views.StudentDetailView.as_view(), name='student_detail'),
     path('student_create/', views.StudentCreateView.as_view(), name='student_create'),

@@ -41,16 +41,30 @@
                 border-radius: 10%;
             }
         </style>
-        <title>Student Management System</title>
+        <title>Royal Crown College</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.jpg' %}" >
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 
     </head>
     <body class="wrapper">
         
-        {% include 'cmsmain/navbar.html' %}
+        {% if user.is_authenticated %}
+            {% include 'cmsmain/navbar.html' %}
+        {% else %}
+            {% include 'cmsmain/navbar2.html' %}
+        {% endif %}
 
-        <div class="main-content">
+        <div class="main-content text-center">
+
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <h3><li>{{message}}</li></h3>
+                {% endfor %}
+                </ul>
+            {% endif %}
+
             {% block content %}
 
 

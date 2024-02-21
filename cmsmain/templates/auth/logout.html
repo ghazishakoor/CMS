@@ -1,0 +1,25 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+<h3 class="mt-2 text-center">Logout</h3>
+<hr />
+
+<div class="row justify-content-center">
+    <div class="col-4">
+        <div class="card bg-light mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-address-card fa-lg"></i> Logout Confirmation
+            </div>
+            <div class="card-body shadow-lg bg-body rounded">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-primary float-end" type="submit">Log out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

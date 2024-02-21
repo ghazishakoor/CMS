@@ -2,11 +2,74 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import Group, User
+from django.contrib.auth.decorators import login_required
 
 from .forms import *
 from .models import *
 
 # Create your views here.
+
+class HomeView(TemplateView):
+    template_name = "cmsmain/home.html"
+
+def StudentPage(request):
+    user = request.user
+    user_groups = user.groups.all()
+    user_group = ''
+    for group in user_groups:
+        user_group = group
+    
+    context = {'user': user, 'group': user_group}
+    
+    return render(request, 'cmsmain/student_landing_page.html', context)
+
+
+def TeacherPage(request):
+    user = request.user
+    user_groups = user.groups.all()
+    user_group = ''
+    for group in user_groups:
+        user_group = group
+
+    context = {'user': user, 'group': user_group}
+
+    return render(request, 'cmsmain/teacher_landing_page.html', context)
+
+
+def AdminPage(request):
+    user = request.user
+    user_groups = user.groups.all()
+    user_group = ''
+    for group in user_groups:
+        user_group = group
+
+    context = {'user': user, 'group': user_group}
+
+    return render(request, 'cmsmain/admin_landing_page.html', context)
+
+
+def custom_redirect(request):
+    user = request.user
+    if user.is_authenticated:
+        if user.groups.filter(name='student').exists():
+            group = 'student'
+            context = {'user': user, 'group': group}
+            return render(request, 'cmsmain/student_page.html/', context)
+
+        elif user.groups.filter(name='teacher').exists():
+            group = 'teacher'
+            context = {'user': user, 'group': group}
+            return render(request, 'cmsmain/teacher_page.html/', context)
+        
+        elif user.groups.filter(name='admin').exists():
+            group = 'admin'
+            context = {'user': user, 'group': group}
+            return render(request, 'cmsmain/teacher_page.html/', context)
+        # Add more conditions for other user groups as needed
+        
+    return render(request, 'cmsmain/home.html/')
+    
 
 
 class StudentListView(ListView):

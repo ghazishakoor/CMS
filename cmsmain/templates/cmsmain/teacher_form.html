@@ -14,7 +14,7 @@
             <div class="card-header">
                 <i class="fa-solid fa-address-card fa-lg"></i> Teacher Form
             </div>
-            <div class="card-body">
+            <div class="card-body shadow-lg bg-body rounded">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
