@@ -4,25 +4,34 @@
 {% block content %}
 
 
-<h3 class="mt-2 text-center">Admin Landing Page</h3>
+<h3 class="mt-2 text-center">Teacher Landing Page</h3>
 <hr />
-
-
 <div class="row justify-content-center">
-    <div class="col-9 col-sm-7 col-md-4 col-lg-3">
+    <div class="col-10 col-sm-7 col-md-4 col-lg-3">
         <div class="card bg-light mb-3">
             <div class="card-header bg-primary text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> {{user}}
+                <i class="fa-solid fa-address-card fa-lg"></i> {{teacher}}
             </div>
-            <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">
-                    <p><strong>{{user}}</strong> lands on <strong>{{group}}</strong> group.</p>
+            <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">                       
+                <table class="table">
+                    <tr><td>Name: <strong>{{teacher}}</strong></td></tr>
+                    <tr><td>Subjects: <strong>
+                            {% for subject in subjects %}
+                                {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}</strong>
+                    </td></tr>
+                    <tr><td>Phone: <strong>{{teacher.phone}}</strong></td></tr>
+                    <tr><td>Email: <strong>{{teacher.email}}</strong></td></tr>
+                    <tr><td>Date Joined: <strong>{{teacher.date_joined}}</strong></td></tr>
+                </table>
             </div>
         </div>
     </div>
-    <div class="col-9 col-sm-7 col-md-4 col-lg-3">
-        <div class="card bg-light mb-3">
+
+    <div class="col-10 col-sm-7 col-md-4 col-lg-3">
+        <div class="card bg-info mb-3">
             <div class="card-header bg-info text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> {{user}}
+                <i class="fa-solid fa-address-card fa-lg"></i> <strong> {{teacher}} </strong>
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">
                     <p><strong>{{user}}</strong> lands on <strong>{{group}}</strong> group.</p>
@@ -30,10 +39,10 @@
             </div>
         </div>
     </div>
-    <div class="col-9 col-sm-7 col-md-4 col-lg-3">
-        <div class="card bg-light mb-3">
+        <div class="col-10 col-sm-7 col-md-4 col-lg-3">
+        <div class="card bg-success mb-3">
             <div class="card-header bg-success text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> {{user}}
+                <i class="fa-solid fa-address-card fa-lg"></i> <strong> {{teacher}} </strong>
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">
                     <p><strong>{{user}}</strong> lands on <strong>{{group}}</strong> group.</p>

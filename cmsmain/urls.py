@@ -23,6 +23,12 @@ urlpatterns = [
     path('teacher_update/<int:pk>', views.TeacherUpdateView.as_view(), name='teacher_update'),
     path('teacher/<int:pk>/delete/', views.TeacherDeleteView.as_view(), name='teacher_delete'),
     path('teacher_success/', views.teacher_success_view, name='teacher_success'),
+    path('subject_list/', views.SubjectListView.as_view(), name='subject_list'),
+    path('subject_detail/<int:pk>/', views.SubjectDetailView.as_view(), name='subject_detail'),
+    path('subject_create/', views.SubjectCreateView.as_view(), name='subject_create'),
+    path('subject_update/<int:pk>', views.SubjectUpdateView.as_view(), name='subject_update'),
+    path('subject/<int:pk>/delete/', views.SubjectDeleteView.as_view(), name='subject_delete'),
+    path('subject_success/', views.subject_success_view, name='subject_success'),
 ]
 
 if settings.DEBUG:

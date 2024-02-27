@@ -9,7 +9,11 @@
             <div class="card-body">
                 <div class="alert alert-success" role="alert">
                     <p>Your form has been submitted successfully.</p>
-                    <a href="{% url 'student_list' %}" class="alert-link">Go to Home Page.</a>
+                    {% if group == 'student' %}
+                        <a href="{% url 'custom_page' %}" class="alert-link">Go to Home Page.</a>
+                    {% elif group == 'admin' %}
+                        <a href="{% url 'teacher_list' %}" class="alert-link">Go to Home Page.</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

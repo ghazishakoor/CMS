@@ -20,6 +20,12 @@
                 font-weight: bold;
             }
 
+            .card-text {
+                height: 300px; /* Set your desired fixed height */
+                overflow-y: scroll; /* Enable vertical scrolling */
+                width: 100%; /* Ensure full width */
+}
+
             table thead tr th {
                 font-size: 16px;
                 font-weight: bold;
@@ -50,7 +56,13 @@
     <body class="wrapper">
         
         {% if user.is_authenticated %}
-            {% include 'cmsmain/navbar.html' %}
+            {% if group == 'student' %}
+                {% include 'app_student/student_navbar.html' %}
+            {% elif group == 'teacher' %}
+                {% include 'app_teacher/teacher_navbar.html' %}
+            {% elif group == 'admin' %}
+                {% include 'cmsmain/admin_navbar.html' %}
+            {% endif %}
         {% else %}
             {% include 'cmsmain/navbar2.html' %}
         {% endif %}

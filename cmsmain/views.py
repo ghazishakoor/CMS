@@ -15,26 +15,20 @@ class HomeView(TemplateView):
 
 def StudentPage(request):
     user = request.user
-    user_groups = user.groups.all()
-    user_group = ''
-    for group in user_groups:
-        user_group = group
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
     
-    context = {'user': user, 'group': user_group}
-    
-    return render(request, 'cmsmain/student_landing_page.html', context)
+    return render(request, 'app_student/student_page.html', context)
 
 
 def TeacherPage(request):
     user = request.user
-    user_groups = user.groups.all()
-    user_group = ''
-    for group in user_groups:
-        user_group = group
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
 
-    context = {'user': user, 'group': user_group}
-
-    return render(request, 'cmsmain/teacher_landing_page.html', context)
+    return render(request, 'app_teacher/teacher_page.html', context)
 
 
 def AdminPage(request):
@@ -46,7 +40,7 @@ def AdminPage(request):
 
     context = {'user': user, 'group': user_group}
 
-    return render(request, 'cmsmain/admin_landing_page.html', context)
+    return render(request, 'cmsmain/admin_page.html', context)
 
 
 def custom_redirect(request):
@@ -54,18 +48,22 @@ def custom_redirect(request):
     if user.is_authenticated:
         if user.groups.filter(name='student').exists():
             group = 'student'
-            context = {'user': user, 'group': group}
-            return render(request, 'cmsmain/student_page.html/', context)
+            student = Student.objects.get(user=user)
+            subjects = student.subjects.all()
+            context = {'user': user, 'group': group, 'student': student, 'subjects': subjects}
+            return render(request, 'app_student/student_page.html/', context)
 
         elif user.groups.filter(name='teacher').exists():
             group = 'teacher'
-            context = {'user': user, 'group': group}
-            return render(request, 'cmsmain/teacher_page.html/', context)
+            teacher = Teacher.objects.get(user=user)
+            subjects = teacher.subjects.all()
+            context = {'user': user, 'group': group, 'teacher': teacher, 'subjects': subjects}
+            return render(request, 'app_teacher/teacher_page.html/', context)
         
         elif user.groups.filter(name='admin').exists():
             group = 'admin'
             context = {'user': user, 'group': group}
-            return render(request, 'cmsmain/teacher_page.html/', context)
+            return render(request, 'cmsmain/admin_page.html/', context)
         # Add more conditions for other user groups as needed
         
     return render(request, 'cmsmain/home.html/')
@@ -74,10 +72,12 @@ def custom_redirect(request):
 
 class StudentListView(ListView):
     model = Student
+    template_name = 'app_student/student_list.html'
     paginate_by = 4
 
 class StudentDetailView(DetailView):
     model = Student
+    template_name = 'app_student/student_detail.html'
     
     def get_context_data(self,**kwargs):
         context = super().get_context_data(**kwargs)
@@ -96,7 +96,11 @@ class StudentCreateView(CreateView):
         return context
 
 def student_success_view(request):
-    return render(request, 'cmsmain/student_success.html')
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_student/student_success.html', context)
 
 
 class StudentUpdateView(UpdateView):
@@ -112,15 +116,18 @@ class StudentUpdateView(UpdateView):
 
 class StudentDeleteView(DeleteView):
     model = Student
+    template_name = 'app_student/student_confirm_delete.html'
     success_url = reverse_lazy('student_list')
 
 
 class TeacherListView(ListView):
     model = Teacher
+    template_name = 'app_teacher/teacher_list.html'
     paginate_by = 8
     
 class TeacherDetailView(DetailView):
     model = Teacher
+    template_name = 'app_teacher/teacher_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -150,8 +157,57 @@ class TeacherUpdateView(UpdateView):
 
 class TeacherDeleteView(DeleteView):
     model = Teacher
+    template_name = 'app_teacher/teacher_confirm_delete.html'
     success_url = reverse_lazy('teacher_list')
-
+    
 
 def teacher_success_view(request):
-    return render(request, 'cmsmain/teacher_success.html')
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_teacher/teacher_success.html', context)
+
+class SubjectListView(ListView):
+    model = Subject
+    template_name = 'app_subject/subject_list.html'
+
+
+class SubjectDetailView(DetailView):
+    model = Subject
+    template_name = 'app_subject/subject_detail.html'
+
+class SubjectCreateView(CreateView):
+    model = Subject
+    fields = '__all__'
+    success_url = '/subject_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'create'
+        return context
+
+
+def subject_success_view(request):
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_subject/subject_success.html', context)
+
+
+class SubjectUpdateView(UpdateView):
+    model = Subject
+    fields = '__all__'
+    success_url = '/subject_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'update'
+        return context
+
+
+class SubjectDeleteView(DeleteView):
+    model = Subject
+    template_name = 'app_subject/subject_confirm_delete.html'
+    success_url = reverse_lazy('subject_list')

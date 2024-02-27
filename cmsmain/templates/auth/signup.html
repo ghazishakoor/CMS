@@ -17,7 +17,8 @@
                 <form action="" method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input type="submit" value="Sign Up">
+                    <input class="btn btn-primary" type="submit" value="Sign Up">
+                    <a class="btn btn-light" href="{% url 'custom_page' %}">Cancel</a>
                 </form>
             </div>
         </div>
