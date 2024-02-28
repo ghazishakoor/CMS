@@ -14,7 +14,11 @@
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">
                 <div class="text-center">
-                    <img class="profile-pic" src="{{student.picture.url}}">
+                    {% if student.picture %}
+                        <img class="profile-pic" src="{{student.picture.url}}">
+                    {% else %}
+                        No Picture
+                    {% endif %}
                 </div>
                 <hr />
                 <table class="table">

@@ -7,34 +7,61 @@
 <h3 class="mt-2 text-center">Student Details</h3>
 <hr />
 
-<div class="row justify-content-center">
-    <div class="col-6">
-        <div class="card bg-light mb-3">
-            <div class="card-header">
-                <i class="fa-solid fa-address-card fa-lg"></i> {{student}}
-            </div>
-            <div class="card-body shadow-lg bg-body rounded">
-                <div class="text-center">
-                    <img class="profile-pic-lg" src="{{student.picture.url}}">
+
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <i class="fa-solid fa-address-card fa-lg"></i> {{student}}
                 </div>
-                <hr />
-                <table class="table">
-                    <tr><th>STUDENT</th></tr>
-                    <tr><td>Student Number: <strong>{{student.student_number}}</strong></td></tr>
-                    <tr><td>Name: <strong>{{student}}</strong></td></tr>
-                    <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
-                    <tr><td>Subjects: <strong>
-                            {% for subject in subjects %}
-                                {{ subject.name }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}</strong>
-                    </td></tr>
-                    <tr><td>Phone: <strong>{{student.phone}}</strong></td></tr>
-                    <tr><td>Nationality: <strong>{{student.nationality}}</strong></td></tr>
-                    <tr><td>Passport Number: <strong>{{student.passport_number}}</strong></td></tr>
-                    <tr><td>Email: <strong>{{student.email}}</strong></td></tr>
-                    <tr><td>Enrolment Date: <strong>{{student.enrolment_date}}</strong></td></tr>
-                </table>
-                <a href="/student_list/" class="btn btn-primary float-end" role="button">Back</a>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <div class="text-center">
+                        {% if student.picture %}
+                            <img class="profile-pic" src="{{student.picture.url}}">
+                        {% else %}
+                            No Picture
+                        {% endif %}
+                    </div>
+                    <hr />
+                    <table class="table">
+                        {% if contact %}
+                            <tr><th>STUDENT</th><th>EMERGENCY CONTACT</th></tr>
+                            <tr><td>Student Number: <strong>{{student.student_number}}</strong></td><td>Name: <strong>{{ contact.full_name }}</strong></td></tr>
+                            <tr><td>Name: <strong>{{student}}</strong></td><td>Phone: <strong>{{ contact.phone }}</strong></td></tr>
+                            <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td><td>Email: <strong>{{ contact.email }}</strong></td></tr>
+                            <tr><td>Phone: <strong>{{student.phone}}</strong></td><td>Relationship: <strong>{{ contact.relationship }}</strong></td></tr>
+                            <tr><td>Nationality: <strong>{{student.nationality}}</strong></td>
+                            <td><a href="{% url 'contact_update' contact.id %}" class="btn btn-light float-end">Update Contact</a></td></tr>
+                            <tr><td>Subjects: <strong>
+                                    {% for subject in subjects %}
+                                        {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}</strong>
+                            </td></tr>
+                            <tr><td>Passport Number: <strong>{{student.passport_number}}</strong></td></tr>
+                            <tr><td>Email: <strong>{{student.email}}</strong></td></tr>
+                            <tr><td>Enrolment Date: <strong>{{student.enrolment_date}}</strong></td></tr>
+                        {% else %}
+                            <tr><th>STUDENT</th><th>NO EMERGENCY CONTACT</th></tr>
+                            <tr><td>Student Number: <strong>{{student.student_number}}</strong></td>
+                            <td><a href="{% url 'contact_create' %}" class="btn btn-light float-end">Add Contact</a></td></tr>
+                            <tr><td>Name: <strong>{{student}}</strong></td></tr>
+                            <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
+                            <tr><td>Subjects: <strong>
+                                    {% for subject in subjects %}
+                                        {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}</strong>
+                            </td></tr>
+                            <tr><td>Phone: <strong>{{student.phone}}</strong></td></tr>
+                            <tr><td>Nationality: <strong>{{student.nationality}}</strong></td></tr>
+                            <tr><td>Passport Number: <strong>{{student.passport_number}}</strong></td></tr>
+                            <tr><td>Email: <strong>{{student.email}}</strong></td></tr>
+                            <tr><td>Enrolment Date: <strong>{{student.enrolment_date}}</strong></td></tr>
+                        {% endif %}
+                    </table>
+                    <a href="/student_list/" class="btn btn-primary float-end" role="button">Back</a>
+                </div>
             </div>
         </div>
     </div>

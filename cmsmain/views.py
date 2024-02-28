@@ -82,6 +82,8 @@ class StudentDetailView(DetailView):
     def get_context_data(self,**kwargs):
         context = super().get_context_data(**kwargs)
         student = self.get_object()
+        contact = Contact.objects.filter(student=student).first()
+        context["contact"] = contact
         context["subjects"] = student.subjects.all()
         return context
 
@@ -160,7 +162,6 @@ class TeacherDeleteView(DeleteView):
     template_name = 'app_teacher/teacher_confirm_delete.html'
     success_url = reverse_lazy('teacher_list')
     
-
 def teacher_success_view(request):
     user = request.user
     group_list = [group.name for group in user.groups.all()]
@@ -211,3 +212,38 @@ class SubjectDeleteView(DeleteView):
     model = Subject
     template_name = 'app_subject/subject_confirm_delete.html'
     success_url = reverse_lazy('subject_list')
+
+
+class ContactDetailView(DetailView):
+    model = Contact
+    template_name = 'app_contact/contact_detail.html'
+
+
+class ContactCreateView(CreateView):
+    model = Contact
+    fields = '__all__'
+    success_url = '/contact_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'create'
+        return context
+
+class ContactUpdateView(UpdateView):
+    model = Contact
+    fields = '__all__'
+    success_url = '/contact_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'update'
+        return context
+
+class ContactDeleteView(DeleteView):
+    model = Contact
+    template_name = 'app_contact/contact_confirm_delete.html'
+    success_url = reverse_lazy('contact_list')
+
+
+def contact_success_view(request):
+    return render(request, 'app_contact/contact_success.html')

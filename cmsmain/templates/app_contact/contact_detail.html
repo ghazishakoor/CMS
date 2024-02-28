@@ -1,0 +1,37 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Contact Details</h3>
+<hr />
+
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <i class="fa-solid fa-address-card fa-lg"></i> {{contact}}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <div class="text-center">
+                        <hr />
+                        <table class="table">
+                            <tr><th>CONTACT</th></tr>
+                            <tr><td>Name: <strong>{{ contact.full_name }}</strong></td></tr>
+                            <tr><td>Phone: <strong>{{ contact.phone }}</strong></td></tr>
+                            <tr><td>Email: <strong>{{ contact.email }}</strong></td></tr>
+                            <tr><td>Relationship: <strong>{{ contact.relationship }}</strong></td></tr>
+                        </table>
+                        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary float-end">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

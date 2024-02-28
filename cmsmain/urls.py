@@ -29,6 +29,11 @@ urlpatterns = [
     path('subject_update/<int:pk>', views.SubjectUpdateView.as_view(), name='subject_update'),
     path('subject/<int:pk>/delete/', views.SubjectDeleteView.as_view(), name='subject_delete'),
     path('subject_success/', views.subject_success_view, name='subject_success'),
+    path('contact_detail/<int:pk>/', views.ContactDetailView.as_view(), name='contact_detail'),
+    path('contact_create/', views.ContactCreateView.as_view(), name='contact_create'),
+    path('contact_update/<int:pk>', views.ContactUpdateView.as_view(), name='contact_update'),
+    path('contact/<int:pk>/delete/', views.ContactDeleteView.as_view(), name='contact_delete'),
+    path('contact_success/', views.contact_success_view, name='contact_success'),
 ]
 
 if settings.DEBUG:
