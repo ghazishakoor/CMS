@@ -1,0 +1,42 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h2 class="text-center mt-2">Assignment Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <table class="table">
+                    <tr>
+                        <th> Assignment</th>
+                        <th> Teacher</th>
+                        <th> Subject</th>
+                        <th> Due Date</th>
+                    </tr>
+                    {% for assignment in assignment_list %}
+                        <tr>
+                            <td> {{assignment.name}} </td>
+                            <td> {{assignment.teacher}} </td>
+                            <td> {{assignment.subject}} </td>
+                            <td> {{assignment.due_date}} </td>
+                            <td> 
+                                <a class="btn btn-success btn-sm" href="{% url 'assignment_detail' assignment.id %}">Detail</a>
+                                <a class="btn btn-info btn-sm" href="{% url 'assignment_update' assignment.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'assignment_delete' assignment.id %}">Delete</a>
+                            </td>    
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

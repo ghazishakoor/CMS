@@ -1,0 +1,35 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Test Details</h3>
+<hr />
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    {{ test }}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <table class="table">
+                        <tr><th>TEST</th></tr>
+                        <tr><td>Test: <strong>{{test.name}}</strong></td></tr>
+                        <tr><td>Teacher: <strong>{{test.teacher}}</strong></td></tr>
+                        <tr><td>Subject: <strong>{{test.subject}}</strong></td></tr>
+                        <tr><td>Term: <strong>{{test.term}}</strong> => <strong>{{term_start}}</strong> to <strong>{{term_end}}</strong></td></tr>
+                        <tr><td>Description: <strong>{{test.description}}</strong></td></tr>
+                        <tr><td>Date: <strong>{{test.date}}</strong></td></tr>
+                    </table>
+                    <a href="/test_list/" class="btn btn-primary float-end" role="button">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

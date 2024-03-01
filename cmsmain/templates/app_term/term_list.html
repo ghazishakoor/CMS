@@ -1,0 +1,41 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h2 class="text-center mt-2">Term Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <table class="table">
+                    <tr>
+                        <th> Term</th>
+                        <th> Start Date</th>
+                        <th> End Date</th>
+                        <th> Action</th>
+                    </tr>
+                    {% for term in term_list %}
+                        <tr>
+                            <td> {{term.term_code}} </td>
+                            <td> {{term.start_date}} </td>
+                            <td> {{term.end_date}} </td>
+                            <td> 
+                                <a class="btn btn-success btn-sm" href="{% url 'term_detail' term.id %}">Detail</a>
+                                <a class="btn btn-info btn-sm" href="{% url 'term_update' term.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'term_delete' term.id %}">Delete</a>
+                            </td>    
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

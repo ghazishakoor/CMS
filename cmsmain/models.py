@@ -3,12 +3,23 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Subject(models.Model):
     code = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.name
+    
+
+class Term(models.Model):
+    term_code = models.CharField(max_length=20, unique=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return self.term_code
+
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -23,6 +34,7 @@ class Student(models.Model):
     email = models.EmailField(max_length=100)
     enrolment_date = models.DateField()
     picture = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -47,22 +59,29 @@ class Teacher(models.Model):
     phone = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(max_length=100)
     date_joined = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
 
-class Term(models.Model):
-    term_code = models.CharField(max_length=20, unique=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
+# CourseClass
+class CourseClass(models.Model):
+    class_code = models.CharField(max_length=20)
+    class_name = models.CharField(max_length=30)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    term = models.ForeignKey(Term, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    students = models.ManyToManyField(
+        Student, related_name='classes', blank=True)
 
     def __str__(self):
-        return self.term_code
+        return f"{self.subject} - {self.term} - {self.teacher}"
 
 
 class Assignment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
+    course_class = models.ForeignKey(CourseClass, on_delete=models.CASCADE, related_name='assignments', null=True, blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -71,7 +90,6 @@ class Assignment(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class AssignMark(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -84,6 +102,8 @@ class AssignMark(models.Model):
 
 class Exam(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
+    course_class = models.ForeignKey(
+        CourseClass, on_delete=models.CASCADE, related_name='exams', null=True, blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -103,6 +123,29 @@ class ExamMark(models.Model):
         return f"{self.student} - {self.exam}"
 
 
+class Test(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
+    course_class = models.ForeignKey(
+        CourseClass, on_delete=models.CASCADE, related_name='tests', null=True, blank=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    term = models.ForeignKey(Term, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    date = models.DateField()
+
+    def __str__(self):
+        return self.name
+
+
+class TestMark(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    mark = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.student} - {self.test}"
+
+
 class Report(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     term = models.ForeignKey(Term, on_delete=models.CASCADE)
@@ -116,3 +159,5 @@ class Program(models.Model):
     
     def __str__(self):
         return self.program_name
+
+
