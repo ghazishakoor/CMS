@@ -3,30 +3,30 @@
 {% block content %}
 
 {% if operation == 'create' %}
-    <h3 class="text-center m-4"> Add Contact</h3>
+    <h3 class="text-center m-4"> Add a Class</h3>
 {% elif operation == 'update' %}
-    <h3 class="text-center m-4"> Update Contact</h3>
+    <h3 class="text-center m-4"> Update Class</h3>
 {% endif %}
 
 <div class="d-flex justify-content-center">
     <div class="row">
-        <div class="col col-md"> 
+        <div class="col col-md">
             <div class="card bg-light mb-3">
                 <div class="card-header">
-                    <i class="fa-solid fa-address-card fa-lg"></i> Emergency Contact
+                    <i class="fa-solid fa-address-card fa-lg"></i> Class Form
                 </div>
                 <div class="card-body shadow-lg bg-body rounded">
-                    <form method="post">
-                        {% if student %}Student = <strong>{{ student }}</strong> {% endif %}
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button type="submit" class="btn btn-primary">Submit</button>
-                        <a href="{% url 'custom_page' %}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Cancel</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
 

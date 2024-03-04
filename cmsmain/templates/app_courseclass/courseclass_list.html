@@ -1,0 +1,43 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h2 class="text-center mt-2">Class Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <table class="table">
+                    <tr>
+                        <th> Class Code</th>
+                        <th> Class Name</th>
+                        <th> Subject</th>
+                        <th> Teacher</th>
+                        <th> Term </th>
+                    </tr>
+                    {% for courseclass in courseclass_list %}
+                        <tr>
+                            <td> {{courseclass.class_code}} </td>
+                            <td> {{courseclass.class_name}} </td>
+                            <td> {{courseclass.subject}} </td>
+                            <td> {{courseclass.teacher}} </td>
+                            <td> {{courseclass.term}} </td>
+                            <td> 
+                                <a class="btn btn-success btn-sm" href="{% url 'courseclass_detail' courseclass.id %}">Detail</a>
+                                <a class="btn btn-info btn-sm" href="{% url 'courseclass_update' courseclass.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'courseclass_delete' courseclass.id %}">Delete</a>
+                            </td>    
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

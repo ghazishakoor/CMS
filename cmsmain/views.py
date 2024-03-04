@@ -96,7 +96,9 @@ class StudentCreateView(CreateView):
 
 def student_success_view(request):
     user = request.user
+    print(user)
     group_list = [group.name for group in user.groups.all()]
+    print(group_list)
     group = group_list[0]
     context = {'user': user, 'group': group}
     return render(request, 'app_student/student_success.html', context)
@@ -221,21 +223,32 @@ class ContactDetailView(DetailView):
 
 class ContactCreateView(CreateView):
     model = Contact
-    fields = '__all__'
+    form_class = ContactForm
     success_url = '/contact_success/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['operation'] = 'create'
+    
+        student_id = self.kwargs.get('pk')
+        if student_id:
+            student = Student.objects.get(pk=student_id)
+            context['student'] = student
         return context
+    
+    def form_valid(self, form):
+        form.instance.student_id = self.kwargs.get('pk')  # Set the student ID before saving
+        return super().form_valid(form)
 
 class ContactUpdateView(UpdateView):
     model = Contact
-    fields = '__all__'
+    fields = ['full_name', 'phone', 'email', 'relationship']
     success_url = '/contact_success/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        contact = self.get_object()
+        context["student"] = contact.student
         context['operation'] = 'update'
         return context
 
@@ -317,6 +330,8 @@ class TestDetailView(DetailView):
         test = self.get_object()
         context["term_end"] = test.term.end_date
         context["term_start"] = test.term.start_date
+        context["class"] = test.course_class.class_name
+        context["class.id"] = test.course_class.id
         return context
 
 class TestCreateView(CreateView):
@@ -453,3 +468,56 @@ class TermDeleteView(DeleteView):
     model = Assignment
     template_name = 'app_term/term_confirm_delete.html'
     success_url = reverse_lazy('term_list')
+
+
+# CourseClass Views --------------------------------
+class CourseClassListView(ListView):
+    model = CourseClass
+    template_name = 'app_courseclass/courseclass_list.html'
+
+
+class CourseClassDetailView(DetailView):
+    model = CourseClass
+    template_name = 'app_courseclass/courseclass_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        courseclass = self.get_object()
+        context["students"] = courseclass.students.all()
+        return context
+
+
+class CourseClassCreateView(CreateView):
+    model = CourseClass
+    fields = '__all__'
+    success_url = '/courseclass_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'create'
+        return context
+
+
+class CourseClassUpdateView(UpdateView):
+    model = CourseClass
+    fields = '__all__'
+    success_url = '/courseclass_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'update'
+        return context
+
+
+class CourseClassDeleteView(DeleteView):
+    model = CourseClass
+    template_name = 'app_courseclass/courseclass_confirm_delete.html'
+    success_url = reverse_lazy('courseclass_list')
+
+
+def courseclass_success_view(request):
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_courseclass/courseclass_success.html', context)

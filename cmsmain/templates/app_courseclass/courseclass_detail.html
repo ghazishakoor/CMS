@@ -1,0 +1,38 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Class Details</h3>
+<hr />
+
+<div class="d-flex justify-content-center">
+<div class="row">
+    <div class="col col-md">
+        <div class="card bg-light mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-address-card fa-lg"></i> {{courseclass}}
+            </div>
+            <div class="card-body shadow-lg bg-body rounded">
+                <table class="table table-striped text-start">
+                    <tr><th>CLASS: {{ courseclass.class_code }} - {{ courseclass.subject }}</th></tr>
+                    <tr><td>Teacher: <strong>{{courseclass.teacher}}</strong></td></tr>
+                    <tr><td>Class Code: <strong>{{courseclass.class_code}}</strong></td></tr>
+                    <tr><td>Class Name: <strong>{{courseclass.class_name}}</strong></td></tr>
+                    <tr><td>Subject: <strong>{{courseclass.subject}}</strong></td></tr>
+                    <tr><td>Term: <strong>{{courseclass.term}}</strong></td></tr>
+                    <tr><td>Students Assigned: <strong></td></tr>
+                        {% for student in students %}
+                            <tr><td><strong>{{ student.first_name }} {{ student.last_name}}{% if not forloop.last %}, {% endif %}</strong></td></tr>
+                        {% endfor %}</strong>
+                </table>
+                <a href="/courseclass_list/" class="btn btn-primary float-end" role="button">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

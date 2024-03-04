@@ -45,7 +45,7 @@
                         {% else %}
                             <tr><th>STUDENT</th><th>NO EMERGENCY CONTACT</th></tr>
                             <tr><td>Student Number: <strong>{{student.student_number}}</strong></td>
-                            <td><a href="{% url 'contact_create' %}" class="btn btn-light float-end">Add Contact</a></td></tr>
+                            <td><a href="{% url 'contact_create' student.id %}" class="btn btn-light float-end">Add Contact</a></td></tr>
                             <tr><td>Name: <strong>{{student}}</strong></td></tr>
                             <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
                             <tr><td>Subjects: <strong>

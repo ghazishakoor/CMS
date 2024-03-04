@@ -34,7 +34,7 @@ urlpatterns = [
     path('subject_success/', views.subject_success_view, name='subject_success'),
     
     path('contact_detail/<int:pk>/', views.ContactDetailView.as_view(), name='contact_detail'),
-    path('contact_create/', views.ContactCreateView.as_view(), name='contact_create'),
+    path('contact_create/<int:pk>/', views.ContactCreateView.as_view(), name='contact_create'),
     path('contact_update/<int:pk>', views.ContactUpdateView.as_view(), name='contact_update'),
     path('contact/<int:pk>/delete/', views.ContactDeleteView.as_view(), name='contact_delete'),
     path('contact_success/', views.contact_success_view, name='contact_success'),
@@ -66,6 +66,13 @@ urlpatterns = [
     path('term_update/<int:pk>', views.TermUpdateView.as_view(), name='term_update'),
     path('term/<int:pk>/delete/', views.TermDeleteView.as_view(), name='term_delete'),
     path('term_success/', views.term_success_view, name='term_success'),
+    
+    path('courseclass_list/', views.CourseClassListView.as_view(), name='courseclass_list'),
+    path('courseclass_detail/<int:pk>/', views.CourseClassDetailView.as_view(), name='courseclass_detail'),
+    path('courseclass_create/', views.CourseClassCreateView.as_view(), name='courseclass_create'),
+    path('courseclass_update/<int:pk>', views.CourseClassUpdateView.as_view(), name='courseclass_update'),
+    path('courseclass/<int:pk>/delete/', views.CourseClassDeleteView.as_view(), name='courseclass_delete'),
+    path('courseclass_success/', views.courseclass_success_view, name='courseclass_success'),
 ]
 
 if settings.DEBUG:
