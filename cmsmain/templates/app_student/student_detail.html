@@ -38,14 +38,17 @@
                                     {% for subject in subjects %}
                                         {{ subject.name }}{% if not forloop.last %}, {% endif %}
                                     {% endfor %}</strong>
-                            </td></tr>
+                                </td>
+                            </tr>
                             <tr><td>Passport Number: <strong>{{student.passport_number}}</strong></td></tr>
                             <tr><td>Email: <strong>{{student.email}}</strong></td></tr>
                             <tr><td>Enrolment Date: <strong>{{student.enrolment_date}}</strong></td></tr>
                         {% else %}
                             <tr><th>STUDENT</th><th>NO EMERGENCY CONTACT</th></tr>
-                            <tr><td>Student Number: <strong>{{student.student_number}}</strong></td>
-                            <td><a href="{% url 'contact_create' student.id %}" class="btn btn-light float-end">Add Contact</a></td></tr>
+                            <tr>
+                                <td>Student Number: <strong>{{student.student_number}}</strong></td>
+                                <td><a href="{% url 'contact_create' student.id %}" class="btn btn-light float-end">Add Contact</a></td>
+                            </tr>
                             <tr><td>Name: <strong>{{student}}</strong></td></tr>
                             <tr><td>Date of Birth: <strong>{{student.date_of_birth}}</strong></td></tr>
                             <tr><td>Subjects: <strong>

@@ -12,6 +12,18 @@
         <div class="card card-body shadow-lg bg-body rounded">
             <table class="table">
                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                    <form class="d-flex float-end" action="{% url 'search' %}" method="get">
+                        <input class="form-control me-sm-2" name="q" type="text" placeholder="first OR last name....">
+                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                    </td>
+                </tr>
+                <tr>
                     <th> Student</th>
                     <th> Date of Birth</th>
                     <th> Nationality</th>

@@ -1,0 +1,41 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h2 class="text-center mt-2">Location Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <table class="table">
+                    <tr>
+                        <th> Location Code</th>
+                        <th> Building</th>
+                        <th> Room</th>
+                        <th> Action</th>
+                    </tr>
+                    {% for location in location_list %}
+                        <tr>
+                            <td> {{location.location_code}} </td>
+                            <td> {{location.building}} </td>
+                            <td> {{location.room}} </td>
+                            <td> 
+                                <a class="btn btn-success btn-sm" href="{% url 'location_detail' location.id %}">Detail</a>
+                                <a class="btn btn-info btn-sm" href="{% url 'location_update' location.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'location_delete' location.id %}">Delete</a>
+                            </td>    
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

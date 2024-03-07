@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from .forms import *
 from .models import *
@@ -59,7 +60,11 @@ def custom_redirect(request):
         
         elif user.groups.filter(name='admin').exists():
             group = 'admin'
-            context = {'user': user, 'group': group}
+            students = Student.objects.all()
+            total_students = students.count()
+            teachers = Teacher.objects.all()
+            total_teachers = teachers.count()
+            context = {'user': user, 'group': group, 'students': students, 'total_students': total_students, 'teachers': teachers, 'total_teachers': total_teachers}
             return render(request, 'cmsmain/admin_page.html/', context)
         # Add more conditions for other user groups as needed
         
@@ -118,6 +123,19 @@ class StudentDeleteView(DeleteView):
     model = Student
     template_name = 'app_student/student_confirm_delete.html'
     success_url = reverse_lazy('student_list')
+    
+    
+# Search view ----------------------------------
+class SearchResultsView(ListView):
+    model = Student
+    template_name = 'app_student/studentsearch.html'
+    
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        object_list = Student.objects.filter(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+        return object_list
 
 
 
@@ -277,7 +295,9 @@ class ExamDetailView(DetailView):
         exam = self.get_object()
         context["term_end"] = exam.term.end_date
         context["term_start"] = exam.term.start_date
+        context["class"] = exam.course_class.class_name
         return context
+
 
 class ExamCreateView(CreateView):
     model = Exam
@@ -302,7 +322,7 @@ class ExamUpdateView(UpdateView):
     model = Exam
     fields = '__all__'
     success_url = '/exam_success/'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['operation'] = 'update'
@@ -332,6 +352,7 @@ class TestDetailView(DetailView):
         context["term_start"] = test.term.start_date
         context["class"] = test.course_class.class_name
         context["class.id"] = test.course_class.id
+
         return context
 
 class TestCreateView(CreateView):
@@ -356,7 +377,7 @@ class TestUpdateView(UpdateView):
     model = Test
     fields = '__all__'
     success_url = '/test_success/'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['operation'] = 'update'
@@ -380,9 +401,12 @@ class AssignmentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        test = self.get_object()
-        context["term_end"] = test.term.end_date
-        context["term_start"] = test.term.start_date
+        assignment = self.get_object()
+        context["term_end"] = assignment.term.end_date
+        context["term_start"] = assignment.term.start_date
+        context["class"] = assignment.course_class.class_name
+        context["class.id"] = assignment.course_class.id
+
         return context
 
 
@@ -521,3 +545,50 @@ def courseclass_success_view(request):
     group = group_list[0]
     context = {'user': user, 'group': group}
     return render(request, 'app_courseclass/courseclass_success.html', context)
+
+
+# Location Views
+class LocationListView(ListView):
+    model = Location
+    template_name = 'app_location/location_list.html'
+
+
+class LocationDetailView(DetailView):
+    model = Location
+    template_name = 'app_location/location_detail.html'
+
+
+class LocationCreateView(CreateView):
+    model = Location
+    fields = '__all__'
+    success_url = '/location_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'create'
+        return context
+
+
+def location_success_view(request):
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_location/location_success.html', context)
+
+
+class LocationUpdateView(UpdateView):
+    model = Location
+    fields = '__all__'
+    success_url = '/location_success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'update'
+        return context
+
+
+class LocationDeleteView(DeleteView):
+    model = Location
+    template_name = 'app_location/location_confirm_delete.html'
+    success_url = reverse_lazy('location_list')

@@ -19,6 +19,8 @@ urlpatterns = [
     path('student/<int:pk>/delete/', views.StudentDeleteView.as_view(), name='student_delete'),
     path('student_success/', views.student_success_view, name='student_success'),
     
+    path("search/", views.SearchResultsView.as_view(), name="search"),
+    
     path('teacher_list/', views.TeacherListView.as_view(), name='teacher_list'),
     path('teacher_detail/<int:pk>/', views.TeacherDetailView.as_view(), name='teacher_detail'),
     path('teacher_create/', views.TeacherCreateView.as_view(), name='teacher_create'),
@@ -73,6 +75,13 @@ urlpatterns = [
     path('courseclass_update/<int:pk>', views.CourseClassUpdateView.as_view(), name='courseclass_update'),
     path('courseclass/<int:pk>/delete/', views.CourseClassDeleteView.as_view(), name='courseclass_delete'),
     path('courseclass_success/', views.courseclass_success_view, name='courseclass_success'),
+    
+    path('location_list/', views.LocationListView.as_view(), name='location_list'),
+    path('location_detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
+    path('location_create/', views.LocationCreateView.as_view(), name='location_create'),
+    path('location_update/<int:pk>', views.LocationUpdateView.as_view(), name='location_update'),
+    path('location/<int:pk>/delete/', views.LocationDeleteView.as_view(), name='location_delete'),
+    path('location_success/', views.location_success_view, name='location_success'),
 ]
 
 if settings.DEBUG:
