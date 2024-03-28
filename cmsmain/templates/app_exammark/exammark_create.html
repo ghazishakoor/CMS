@@ -1,0 +1,104 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Add Exam Mark</h3>
+<hr />
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <strong>Exam Marks Form</strong>
+                </div>
+                <div class="card-body shadow-lg rounded">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Select Exam -->
+                        <label for="id_exam">Select Exam:</label>
+                        <select name="exam" id="id_exam">
+                            {% for exam in exams %}
+                            <option value="{{ exam.id }}">{{ exam.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <br />
+                        <br />
+                        
+                        <!-- Additional Fields (hidden by default) -->
+                        <div id="additional_fields" style="display: none;">
+                            <label for="id_student">Select Student:</label>
+                            <select name="student" id="id_student">
+                            <!-- Options will be populated via JavaScript -->
+                            </select>
+                            <br />
+                            <br />
+                            
+                            <label for="id_mark">Mark:</label>
+                            <input type="text" name="mark" id="id_mark">
+                            <br />
+                            <br />
+                            
+                            <label for="id_remark">Remark:</label>
+                            <textarea name="remark" id="id_remark"></textarea>
+                            <br />
+                            <br />
+                        </div>
+                        
+                        <button type="button" id="show_fields_button" style="display: none;">Add Marks</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a class="btn btn-secondary" href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Show additional fields when an exam is selected
+  document.getElementById('id_exam').addEventListener('change', function() {
+    var selectedExamId = this.value;
+    if (selectedExamId) {
+      document.getElementById('additional_fields').style.display = 'block';
+      // Fetch students for the selected exam
+      fetch('/fetch_students/?exam_id=' + selectedExamId)
+        .then(response => response.json())
+        .then(data => {
+          var studentSelect = document.getElementById('id_student');
+          studentSelect.innerHTML = ''; // Clear existing options
+          data.forEach(student => {
+            var option = document.createElement('option');
+            option.value = student.id;
+            option.textContent = student.full_name; // Assuming Student model has a method 'full_name'
+            studentSelect.appendChild(option);
+          });
+        });
+    } else {
+      document.getElementById('additional_fields').style.display = 'none';
+    }
+  });
+
+  // Show submit button when additional fields are displayed
+  document.getElementById('show_fields_button').addEventListener('click', function() {
+    var additionalFieldsDiv = document.getElementById('additional_fields');
+    if (additionalFieldsDiv.style.display === 'none') {
+      additionalFieldsDiv.style.display = 'block';
+      this.style.display = 'none';
+      document.querySelector('button[type="submit"]').style.display = 'block';
+    }
+  });
+
+  // Trigger change event if an exam is pre-selected
+  if (document.getElementById('id_exam').value) {
+    document.getElementById('id_exam').dispatchEvent(new Event('change'));
+  }
+</script>
+
+
+
+
+{% endblock %}

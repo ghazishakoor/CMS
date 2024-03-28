@@ -1,0 +1,57 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Exam Marks</h3>
+<hr />
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    Exam Marks for {{ student }}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <h5>Please select any filter to narrow down search</h5>
+                    <br />
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit">Filter</button>
+                    </form>
+                    <br />
+                    <table class='table'>
+                        <thead>
+                            <tr>
+                                <th>Exam</th>
+                                <th>Exam Date</th>
+                                <th>Subject</th>
+                                <th>Mark</th>
+                                <th>Teacher</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam_mark in exam_marks %}
+                            <tr>
+                                <td>{{ exam_mark.exam.name }}</td>
+                                <td>{{ exam_mark.exam.date }}</td>
+                                <td>{{ exam_mark.exam.course_class.subject }}</td>
+                                <td>{{ exam_mark.mark }}</td>
+                                <td>{{ exam_mark.exam.course_class.teacher }}</td>
+                                <td>{{ exam_mark.remark }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "cmsmain/base.html" %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light my-3 mb-3">
+                <div class="card-header">
+                    {{selected_exam.name}}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <h3>Exam Results - {{ selected_exam.name }}</h3>
+                    <h4> Class - {{selected_class}}</h4>
+                    <h5> Exam Date - {{selected_exam.date}}</h5>
+                    <hr />
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th> Mark</th>
+                                <th> Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam_mark in exam_marks %}
+                                <tr> 
+                                    <td>{{ exam_mark.student }}</td>
+                                    <td> {{ exam_mark.mark }}</td>
+                                    <td> {{ exam_mark.remark }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "cmsmain/base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light my-3 mb-3">
+                <div class="card-header">
+                    {{ selected_class.class_name }}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <h4>Marks - {{ selected_class.class_name }}</h4>
+                    <h6>Teacher - {{ teacher }}</h6>
+                    <h6>Subject - {{ selected_class.subject }}</h6>
+                    <hr />
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                {% for exam in exams %}
+                                    <th>{{ exam.name }}</th>
+                                {% endfor %}
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>{{ student }}</td>
+                                    {% for key, value in reverse_marks_dict.items %}
+                                        <td>
+                                            {{value.pop}}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

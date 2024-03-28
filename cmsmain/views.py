@@ -1,10 +1,15 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.core.exceptions import FieldDoesNotExist
+import numpy as np
 
 from .forms import *
 from .models import *
@@ -40,7 +45,7 @@ def AdminPage(request):
 
     return render(request, 'cmsmain/admin_page.html', context)
 
-
+@login_required(login_url='auth/login/')
 def custom_redirect(request):
     user = request.user
     if user.is_authenticated:
@@ -64,7 +69,9 @@ def custom_redirect(request):
             total_students = students.count()
             teachers = Teacher.objects.all()
             total_teachers = teachers.count()
-            context = {'user': user, 'group': group, 'students': students, 'total_students': total_students, 'teachers': teachers, 'total_teachers': total_teachers}
+            classes = CourseClass.objects.all()
+            total_classes = classes.count()
+            context = {'user': user, 'group': group, 'students': students, 'total_students': total_students, 'teachers': teachers, 'total_teachers': total_teachers, 'total_classes': total_classes}
             return render(request, 'cmsmain/admin_page.html/', context)
         # Add more conditions for other user groups as needed
         
@@ -101,9 +108,7 @@ class StudentCreateView(CreateView):
 
 def student_success_view(request):
     user = request.user
-    print(user)
     group_list = [group.name for group in user.groups.all()]
-    print(group_list)
     group = group_list[0]
     context = {'user': user, 'group': group}
     return render(request, 'app_student/student_success.html', context)
@@ -293,8 +298,8 @@ class ExamDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         exam = self.get_object()
-        context["term_end"] = exam.term.end_date
-        context["term_start"] = exam.term.start_date
+        context["term_end"] = exam.course_class.term.end_date
+        context["term_start"] = exam.course_class.term.start_date
         context["class"] = exam.course_class.class_name
         return context
 
@@ -592,3 +597,240 @@ class LocationDeleteView(DeleteView):
     model = Location
     template_name = 'app_location/location_confirm_delete.html'
     success_url = reverse_lazy('location_list')
+    
+    
+
+# ExamMark --------------------------------------------------------
+
+class ExamMarkListView(ListView):
+    model = ExamMark
+    template_name = 'app_exammark/exammark_list.html'
+    # Optional: sets the name of the context variable
+    context_object_name = 'exammark_list'
+
+    def get_queryset(self):
+        return super().get_queryset().order_by('exam__name')
+
+    
+    
+class TeacherExamMarkListView(ListView):
+    model = ExamMark
+    template_name = 'app_exammark/teacher_exammark_list.html'
+    # Optional: sets the name of the context variable
+    context_object_name = 'teacher_exammark_list'
+
+    def get_queryset(self):
+        # Assuming you have some way to access the logged-in teacher
+        # Adjust this according to your user model
+        logged_in_teacher = self.request.user.teacher
+
+        # Filter the classes taught by the logged-in teacher
+        teacher_classes = logged_in_teacher.classes.all()
+
+        # Fetch all exams associated with the classes taught by the teacher
+        teacher_exams = Exam.objects.filter(course_class__in=teacher_classes)
+
+        # Filter ExamMarks based on exams associated with the teacher
+        return super().get_queryset().filter(exam__in=teacher_exams).order_by('exam__name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = self.request.user.teacher
+        context['teacher'] = teacher
+        return context
+    
+
+class ExamMarkDetailView(DetailView):
+    model = ExamMark
+    template_name = 'app_exammark/exammark_detail.html'
+
+
+class ExamMarkCreateView(LoginRequiredMixin, CreateView):
+    model = ExamMark
+    fields = ['exam', 'student', 'mark', 'remark']
+    template_name = 'app_exammark/exammark_create.html'
+    # Use reverse_lazy for dynamic URL resolution
+    success_url = reverse_lazy('exammark_success')
+
+    def form_valid(self, form):
+        form.instance.teacher = self.request.user.teacher
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = self.request.user.teacher
+        course_classes = CourseClass.objects.filter(teacher=teacher)
+        exams = Exam.objects.filter(course_class__in=course_classes)
+        context['exams'] = exams
+        return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Dynamically adjust queryset of 'student' field based on selected exam
+        exam_id = self.request.POST.get('exam')
+        if exam_id:
+            exam = get_object_or_404(Exam, pk=exam_id)
+            students = exam.course_class.students.all()
+            form.fields['student'].queryset = students
+        else:
+            # Empty queryset by default
+            form.fields['student'].queryset = Student.objects.none()
+        return form
+
+
+def fetch_students(request):
+    if request.method == 'GET' and 'exam_id' in request.GET:
+        exam_id = request.GET.get('exam_id')
+        students = Student.objects.filter(classes__exams__id=exam_id)
+        students_data = [
+            {'id': student.id, 'full_name': f"{student.first_name} {student.last_name}"} for student in students]
+        return JsonResponse(students_data, safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+
+def exammark_success_view(request):
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_exammark/exammark_success.html', context)
+
+
+class ExamMarkUpdateView(UpdateView):
+    model = ExamMark
+    fields = ['student', 'mark', 'remark']  # Fields to display in the form
+    success_url = '/exammark_success/'  # Redirect URL after successful update
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        try:
+            # Filter students based on the associated exam
+            exam_id = self.object.exam_id
+            form.fields['student'].queryset = form.fields['student'].queryset.filter(
+                exammarks__exam_id=exam_id)
+        except AttributeError as e:
+            # Handle attribute error
+            print(f"AttributeError: {e}")
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['operation'] = 'update'
+        return context
+
+
+class ExamMarkDeleteView(DeleteView):
+    model = ExamMark
+    template_name = 'app_exammark/exammark_confirm_delete.html'
+    success_url = reverse_lazy('exammark_list')
+    
+class TeacherExamMarkDeleteView(DeleteView):
+    model = ExamMark
+    template_name = 'app_teacher/teacher_exammark_confirm_delete.html'
+    success_url = reverse_lazy('teacher_exammark_list')
+
+
+def exam_results(request):
+    if request.method == 'POST':
+        exam_id = request.POST.get('exam_id')
+        selected_exam = Exam.objects.get(pk=exam_id)
+        selected_class = selected_exam.course_class
+        exam_marks = ExamMark.objects.filter(exam=selected_exam)
+        context = {'selected_exam': selected_exam, 'exam_marks': exam_marks, 'selected_class': selected_class}
+        return render(request, 'app_exammark/exam_results.html', context)
+    else:
+        # Assuming you have implemented user authentication and each teacher has a corresponding user
+        teacher = request.user.teacher
+        course_classes = teacher.classes.all()
+        exams = Exam.objects.filter(course_class__in=course_classes)
+        return render(request, 'app_exammark/exam_selection.html', {'exams': exams})
+
+
+def class_results(request):
+    if request.method == 'POST':
+        course_class_id = request.POST.get('course_class_id')
+        selected_class = CourseClass.objects.get(pk=course_class_id)
+        students = selected_class.students.all()
+        teacher = request.user.teacher
+        exams = selected_class.exams.all()
+        
+        exam_marks_dict = {}
+
+        for exam in exams:
+            # Initialize an empty list for each exam
+            exam_marks_dict[exam] = []
+
+        for student in students:
+            for exam in exams:
+                exam_mark = ExamMark.objects.filter(
+                    student=student, exam=exam).first()
+
+                if exam_mark:
+                    mark = int(exam_mark.mark)
+                    exam_marks_dict[exam].append(mark)
+
+                else:
+                    exam_marks_dict[exam].append(0)
+
+        # Initialize the 'Total' list with zeros
+        total_marks = [0] * len(next(iter(exam_marks_dict.values())))
+
+        # Sum the marks for each student
+        for marks in exam_marks_dict.values():
+            total_marks = [total_marks[i] + marks[i] for i in range(len(marks))]
+
+        # Add the total marks to the 'Total' key
+        exam_marks_dict['Total'] = total_marks
+            
+        
+        # Reverse the marks in the lists in exam_marks_dict so they pop in right order in the template
+        reverse_marks_dict = {key: value[::-1] for key, value in exam_marks_dict.items()}
+
+        context = {
+            'selected_class': selected_class,
+            'students': students,
+            'teacher': teacher,
+            'exams': exams,
+            'reverse_marks_dict': reverse_marks_dict,  # Pass the dictionary to the template
+        }
+        return render(request, 'app_exammark/class_results.html', context)
+
+    else:
+        teacher = request.user.teacher
+        course_classes = teacher.classes.all()
+        exams = Exam.objects.filter(course_class__in=course_classes)
+        return render(request, 'app_exammark/class_selection.html', {'exams': exams, 'course_classes': course_classes})
+
+
+
+
+# Exam marks view for students
+@login_required
+def exam_marks_view(request):
+    form = ExamMarksFilterForm(request.POST or None)
+    exam_marks = ExamMark.objects.filter(student=request.user.student)
+    student = request.user.student
+
+    if request.method == 'POST':
+        if form.is_valid():
+            subject = form.cleaned_data.get('subject')
+            course_class = form.cleaned_data.get('course_class')
+            exam = form.cleaned_data.get('exam')
+
+            if subject:
+                exam_marks = exam_marks.filter(
+                    exam__course_class__subject=subject)
+            if course_class:
+                exam_marks = exam_marks.filter(exam__course_class=course_class)
+            if exam:
+                exam_marks = exam_marks.filter(exam=exam)
+
+    context = {
+        'form': form,
+        'exam_marks': exam_marks,
+        'student': student
+    }
+    return render(request, 'app_student/exam_marks.html', context)

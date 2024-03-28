@@ -55,12 +55,11 @@ class TeacherAssignmentForm(forms.ModelForm):
         )
 
 
-
-class StudentForm(forms.ModelForm):
-
-    class Meta:
-        model = Student
-        fields = '__all__'
+class ExamMarksFilterForm(forms.Form):
+    subject = forms.ModelChoiceField(queryset=Subject.objects.all(
+    ), required=False, widget=forms.Select(attrs={'class': 'form-field'}))
+    course_class = forms.ModelChoiceField(queryset=CourseClass.objects.all(), required=False)
+    exam = forms.ModelChoiceField(queryset=Exam.objects.all(), required=False)
 
 
 class ContactForm(forms.ModelForm):

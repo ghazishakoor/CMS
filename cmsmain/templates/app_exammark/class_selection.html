@@ -1,0 +1,30 @@
+{% extends "cmsmain/base.html" %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light my-4 mb-3">
+                <div class="card-header">
+                    Class Selection Form
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <form method="post">
+                        {% csrf_token %}
+                        <label for="course_class">Select Class:</label>
+                        <select name="course_class_id" id="course_class">
+                            {% for course_class in course_classes %}
+                                <option value="{{ course_class.id }}">{{ course_class.class_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Show Results</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

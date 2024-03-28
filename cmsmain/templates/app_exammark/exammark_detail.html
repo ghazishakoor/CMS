@@ -1,0 +1,37 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h3 class="mt-2 text-center">Exam Mark Details</h3>
+<hr />
+
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    {{ term }}
+                </div>
+                <div class="card-body shadow-lg bg-body rounded">
+                    <table class="table">
+                        <tr><th>Exam Mark</th></tr>
+                        <tr><th>Teacher: {{ exammark.exam.course_class.teacher }}</th></tr>
+                        <tr><td>Student: <strong>{{exammark.student}}</strong></td></tr>
+                        <tr><td>Exam: <strong>{{exammark.exam}}</strong></td></tr>
+                        <tr><td>Class: <strong>{{exammark.exam.course_class}}</strong></td></tr>
+                        <tr><td>Subject: <strong>{{exammark.exam.course_class.subject}}</strong></td></tr>
+                        <tr><td>Exam Date: <strong>{{exammark.exam.date}}</strong></td></tr>
+                        <tr><td>Mark: <strong>{{exammark.mark}}</strong></td></tr>
+                        <tr><td>Remark: <strong>{{exammark.remark}}</strong></td></tr>
+                    </table>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary float-end" role="button">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -12,22 +12,23 @@
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card border-primary mb-3" style="max-width: 20rem;">
             <div class="card-header bg-primary text-light">
-                <i class="fa-solid fa-graduation-cap fa-lg"></i> Students
+                <i class="fa-sharp fa-solid fa-bars fa-lg"></i> College Statistics
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
-                <h3>Students Enrolled</h3>
-                <h1 class="display-1 text-danger"><strong>{{ total_students }}</strong></h1>
+                <strong>Total Students Enrolled</strong><h2 class="text-danger">{{ total_students }}</h2>
+                <strong>Available Teachers</strong><h2 class="text-danger">{{ total_teachers }}</h2>
+                <strong>Total Running Classes</strong><h2 class="text-danger">{{ total_classes }}</h2>
             </div>
         </div>
     </div>
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card border-info mb-3" style="max-width: 20rem;">
             <div class="card-header bg-info text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> Teachers 
+                <i class="fa-solid fa-address-card fa-lg"></i> To Design 
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
-                <h3>Teachers Available</h3>
-                <h1 class="display-1 text-danger"><strong>{{ total_teachers }}</strong></h1>
+                <h3>Available</h3>
+                {% lorem %}
             </div>
         </div>
     </div>
@@ -37,7 +38,7 @@
                 <i class="fa-solid fa-address-card fa-lg"></i> {{user}}
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
-                    <p><strong>{{user}}</strong> lands on <strong>{{group}}</strong> group.</p>
+                    <p>Welcome <strong>{{user}}</strong> !</p>
             </div>
         </div>
     </div>

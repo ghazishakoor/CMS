@@ -1,0 +1,46 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<h2 class="text-center mt-2">Grade Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <table class="table">
+                    <tr>
+                        <th> Student</th>
+                        <th> Exam</th>
+                        <th> Teacher</th>
+                        <th> Mark</th>
+                        <th> Action</th>
+                    </tr>
+                    {% for exammark in exammark_list %}
+                        <tr>
+                            <td> {{exammark.student}} </td>
+                            <td> <strong>{{exammark.exam}}</strong> </td>
+                            <td> {{exammark.exam.course_class.teacher}} </td>
+                            <td> {{exammark.mark}} </td>
+                            <td> 
+                                <a class="btn btn-success btn-sm" href="{% url 'exammark_detail' exammark.id %}">Detail</a>
+                                {% comment %}
+                                ------Admin does not have the permission to Update or Delete student marks----
+                                <a class="btn btn-info btn-sm" href="{% url 'exammark_update' exammark.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'exammark_delete' exammark.id %}">Delete</a>
+                                {% endcomment %}
+                            </td>    
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

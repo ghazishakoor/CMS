@@ -10,6 +10,7 @@
     <div class="row">
         <div class="col col-md">
             <div class="card card-body shadow-lg bg-body rounded">
+                <a class="btn btn-light" href="/exam_create/">Add a new exam</a>
                 <table class="table">
                     <tr>
                         <th> Exam</th>
@@ -20,8 +21,8 @@
                     {% for exam in exam_list %}
                         <tr>
                             <td> {{exam.name}} </td>
-                            <td> {{exam.teacher}} </td>
-                            <td> {{exam.subject}} </td>
+                            <td> {{exam.course_class.teacher}} </td>
+                            <td> {{exam.course_class.subject}} </td>
                             <td> {{exam.date}} </td>
                             <td> 
                                 <a class="btn btn-success btn-sm" href="{% url 'exam_detail' exam.id %}">Detail</a>

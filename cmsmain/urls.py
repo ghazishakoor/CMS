@@ -19,6 +19,8 @@ urlpatterns = [
     path('student/<int:pk>/delete/', views.StudentDeleteView.as_view(), name='student_delete'),
     path('student_success/', views.student_success_view, name='student_success'),
     
+    path('exam_marks/', views.exam_marks_view, name='exam_marks'),
+    
     path("search/", views.SearchResultsView.as_view(), name="search"),
     
     path('teacher_list/', views.TeacherListView.as_view(), name='teacher_list'),
@@ -82,6 +84,22 @@ urlpatterns = [
     path('location_update/<int:pk>', views.LocationUpdateView.as_view(), name='location_update'),
     path('location/<int:pk>/delete/', views.LocationDeleteView.as_view(), name='location_delete'),
     path('location_success/', views.location_success_view, name='location_success'),
+    
+    path('exammark_list/', views.ExamMarkListView.as_view(), name='exammark_list'),
+    path('exammark_detail/<int:pk>/', views.ExamMarkDetailView.as_view(), name='exammark_detail'),
+    path('exammark_create/', views.ExamMarkCreateView.as_view(), name='exammark_create'),
+    path('exammark_update/<int:pk>', views.ExamMarkUpdateView.as_view(), name='exammark_update'),
+    path('exammark/<int:pk>/delete/', views.ExamMarkDeleteView.as_view(), name='exammark_delete'),
+    path('exammark_success/', views.exammark_success_view, name='exammark_success'),
+    
+    path('teacher_exammark/<int:pk>/delete/', views.TeacherExamMarkDeleteView.as_view(), name='teacher_exammark_delete'),
+    path('teacher_exammark_list/', views.TeacherExamMarkListView.as_view(), name='teacher_exammark_list'),
+    
+    path('fetch_students/', views.fetch_students, name='fetch_students'),
+    
+    path('exam_result/', views.exam_results, name='exam_result'),
+    
+    path('class_result/', views.class_results, name='class_result'),
 ]
 
 if settings.DEBUG:
