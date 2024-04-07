@@ -7,10 +7,13 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
+from functools import wraps
+from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.core.exceptions import FieldDoesNotExist
-import numpy as np
 
+
+from .decorators import unauthenticated_user, allowed_users, admin_only, teacher_only, student_only
 from .forms import *
 from .models import *
 
@@ -19,6 +22,8 @@ from .models import *
 class HomeView(TemplateView):
     template_name = "cmsmain/home.html"
 
+@login_required(login_url='login')
+@student_only
 def StudentPage(request):
     user = request.user
     group_list = [group.name for group in user.groups.all()]
@@ -27,7 +32,8 @@ def StudentPage(request):
     
     return render(request, 'app_student/student_page.html', context)
 
-
+@login_required(login_url='login')
+@teacher_only
 def TeacherPage(request):
     user = request.user
     group_list = [group.name for group in user.groups.all()]
@@ -36,7 +42,8 @@ def TeacherPage(request):
 
     return render(request, 'app_teacher/teacher_page.html', context)
 
-
+@login_required(login_url='login')
+@admin_only
 def AdminPage(request):
     user = request.user
     group_list = [group.name for group in user.groups.all()]
@@ -45,7 +52,7 @@ def AdminPage(request):
 
     return render(request, 'cmsmain/admin_page.html', context)
 
-@login_required(login_url='auth/login/')
+@login_required(login_url='login')
 def custom_redirect(request):
     user = request.user
     if user.is_authenticated:
@@ -79,11 +86,15 @@ def custom_redirect(request):
     
 
 # Student Views ---------------------------
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class StudentListView(ListView):
     model = Student
     template_name = 'app_student/student_list.html'
     paginate_by = 6
 
+
+@method_decorator(login_required, name='dispatch')
 class StudentDetailView(DetailView):
     model = Student
     template_name = 'app_student/student_detail.html'
@@ -96,6 +107,9 @@ class StudentDetailView(DetailView):
         context["subjects"] = student.subjects.all()
         return context
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class StudentCreateView(CreateView):
     model = Student
     form_class = StudentAssignmentForm
@@ -114,6 +128,8 @@ def student_success_view(request):
     return render(request, 'app_student/student_success.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class StudentUpdateView(UpdateView):
     model = Student
     fields = '__all__'
@@ -124,6 +140,9 @@ class StudentUpdateView(UpdateView):
         context['operation'] = 'update'
         return context
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class StudentDeleteView(DeleteView):
     model = Student
     template_name = 'app_student/student_confirm_delete.html'
@@ -131,6 +150,7 @@ class StudentDeleteView(DeleteView):
     
     
 # Search view ----------------------------------
+@method_decorator(login_required, name='dispatch')
 class SearchResultsView(ListView):
     model = Student
     template_name = 'app_student/studentsearch.html'
@@ -145,11 +165,15 @@ class SearchResultsView(ListView):
 
 
 # Teacher Views --------------------------------
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class TeacherListView(ListView):
     model = Teacher
     template_name = 'app_teacher/teacher_list.html'
     paginate_by = 8
     
+
+@method_decorator(login_required, name='dispatch')
 class TeacherDetailView(DetailView):
     model = Teacher
     template_name = 'app_teacher/teacher_detail.html'
@@ -160,6 +184,9 @@ class TeacherDetailView(DetailView):
         context["subjects"] = teacher.subjects.all()
         return context
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class TeacherCreateView(CreateView):
     model = Teacher
     form_class = TeacherAssignmentForm
@@ -170,6 +197,8 @@ class TeacherCreateView(CreateView):
         context['operation'] = 'create'
         return context
 
+
+@method_decorator(login_required, name='dispatch')
 class TeacherUpdateView(UpdateView):
     model = Teacher
     fields = '__all__'
@@ -180,6 +209,9 @@ class TeacherUpdateView(UpdateView):
         context['operation'] = 'update'
         return context
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class TeacherDeleteView(DeleteView):
     model = Teacher
     template_name = 'app_teacher/teacher_confirm_delete.html'
@@ -195,14 +227,19 @@ def teacher_success_view(request):
 
 
 # Subject Views ---------------------------
+@method_decorator(login_required, name='dispatch')
 class SubjectListView(ListView):
     model = Subject
     template_name = 'app_subject/subject_list.html'
 
+
+@method_decorator(login_required, name='dispatch')
 class SubjectDetailView(DetailView):
     model = Subject
     template_name = 'app_subject/subject_detail.html'
 
+
+@method_decorator(login_required, name='dispatch')
 class SubjectCreateView(CreateView):
     model = Subject
     fields = '__all__'
@@ -221,6 +258,8 @@ def subject_success_view(request):
     context = {'user': user, 'group': group}
     return render(request, 'app_subject/subject_success.html', context)
 
+
+@method_decorator(login_required, name='dispatch')
 class SubjectUpdateView(UpdateView):
     model = Subject
     fields = '__all__'
@@ -231,6 +270,8 @@ class SubjectUpdateView(UpdateView):
         context['operation'] = 'update'
         return context
 
+
+@method_decorator(login_required, name='dispatch')
 class SubjectDeleteView(DeleteView):
     model = Subject
     template_name = 'app_subject/subject_confirm_delete.html'
@@ -239,11 +280,14 @@ class SubjectDeleteView(DeleteView):
 
 
 # Contact Views -------------------------
+@method_decorator(login_required, name='dispatch')
 class ContactDetailView(DetailView):
     model = Contact
     template_name = 'app_contact/contact_detail.html'
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class ContactCreateView(CreateView):
     model = Contact
     form_class = ContactForm
@@ -263,6 +307,9 @@ class ContactCreateView(CreateView):
         form.instance.student_id = self.kwargs.get('pk')  # Set the student ID before saving
         return super().form_valid(form)
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class ContactUpdateView(UpdateView):
     model = Contact
     fields = ['full_name', 'phone', 'email', 'relationship']
@@ -275,6 +322,9 @@ class ContactUpdateView(UpdateView):
         context['operation'] = 'update'
         return context
 
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class ContactDeleteView(DeleteView):
     model = Contact
     template_name = 'app_contact/contact_confirm_delete.html'
@@ -287,10 +337,13 @@ def contact_success_view(request):
 
 
 # Exam Views ---------------
+@method_decorator(login_required, name='dispatch')
 class ExamListView(ListView):
     model = Exam
     template_name = 'app_assessments/exam_list.html'
 
+
+@method_decorator(login_required, name='dispatch')
 class ExamDetailView(DetailView):
     model = Exam
     template_name = 'app_assessments/exam_detail.html'
@@ -304,6 +357,7 @@ class ExamDetailView(DetailView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class ExamCreateView(CreateView):
     model = Exam
     fields = '__all__'
@@ -323,6 +377,7 @@ def exam_success_view(request):
     return render(request, 'app_assessments/exam_success.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class ExamUpdateView(UpdateView):
     model = Exam
     fields = '__all__'
@@ -334,6 +389,7 @@ class ExamUpdateView(UpdateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class ExamDeleteView(DeleteView):
     model = Exam
     template_name = 'app_assessments/exam_confirm_delete.html'
@@ -452,17 +508,19 @@ class AssignmentDeleteView(DeleteView):
     
 
 # Term Views
+@method_decorator(login_required, name='dispatch')
 class TermListView(ListView):
     model = Term
     template_name = 'app_term/term_list.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class TermDetailView(DetailView):
     model = Term
     template_name = 'app_term/term_detail.html'
 
 
-
+@method_decorator(login_required, name='dispatch')
 class TermCreateView(CreateView):
     model = Term
     fields = '__all__'
@@ -482,6 +540,7 @@ def term_success_view(request):
     return render(request, 'app_term/term_success.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class TermUpdateView(UpdateView):
     model = Term
     fields = '__all__'
@@ -493,6 +552,7 @@ class TermUpdateView(UpdateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class TermDeleteView(DeleteView):
     model = Assignment
     template_name = 'app_term/term_confirm_delete.html'
@@ -500,11 +560,13 @@ class TermDeleteView(DeleteView):
 
 
 # CourseClass Views --------------------------------
+@method_decorator(login_required, name='dispatch')
 class CourseClassListView(ListView):
     model = CourseClass
     template_name = 'app_courseclass/courseclass_list.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class CourseClassDetailView(DetailView):
     model = CourseClass
     template_name = 'app_courseclass/courseclass_detail.html'
@@ -516,6 +578,7 @@ class CourseClassDetailView(DetailView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class CourseClassCreateView(CreateView):
     model = CourseClass
     fields = '__all__'
@@ -527,6 +590,7 @@ class CourseClassCreateView(CreateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class CourseClassUpdateView(UpdateView):
     model = CourseClass
     fields = '__all__'
@@ -538,6 +602,7 @@ class CourseClassUpdateView(UpdateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class CourseClassDeleteView(DeleteView):
     model = CourseClass
     template_name = 'app_courseclass/courseclass_confirm_delete.html'
@@ -553,16 +618,19 @@ def courseclass_success_view(request):
 
 
 # Location Views
+@method_decorator(login_required, name='dispatch')
 class LocationListView(ListView):
     model = Location
     template_name = 'app_location/location_list.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class LocationDetailView(DetailView):
     model = Location
     template_name = 'app_location/location_detail.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class LocationCreateView(CreateView):
     model = Location
     fields = '__all__'
@@ -582,6 +650,7 @@ def location_success_view(request):
     return render(request, 'app_location/location_success.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class LocationUpdateView(UpdateView):
     model = Location
     fields = '__all__'
@@ -593,6 +662,7 @@ class LocationUpdateView(UpdateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class LocationDeleteView(DeleteView):
     model = Location
     template_name = 'app_location/location_confirm_delete.html'
@@ -601,7 +671,8 @@ class LocationDeleteView(DeleteView):
     
 
 # ExamMark --------------------------------------------------------
-
+@method_decorator(login_required, name='dispatch')
+@method_decorator(admin_only, name='dispatch')
 class ExamMarkListView(ListView):
     model = ExamMark
     template_name = 'app_exammark/exammark_list.html'
@@ -612,7 +683,8 @@ class ExamMarkListView(ListView):
         return super().get_queryset().order_by('exam__name')
 
     
-    
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
 class TeacherExamMarkListView(ListView):
     model = ExamMark
     template_name = 'app_exammark/teacher_exammark_list.html'
@@ -640,11 +712,14 @@ class TeacherExamMarkListView(ListView):
         return context
     
 
+@method_decorator(login_required, name='dispatch')
 class ExamMarkDetailView(DetailView):
     model = ExamMark
     template_name = 'app_exammark/exammark_detail.html'
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
 class ExamMarkCreateView(LoginRequiredMixin, CreateView):
     model = ExamMark
     fields = ['exam', 'student', 'mark', 'remark']
@@ -699,6 +774,8 @@ def exammark_success_view(request):
     return render(request, 'app_exammark/exammark_success.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
 class ExamMarkUpdateView(UpdateView):
     model = ExamMark
     fields = ['student', 'mark', 'remark']  # Fields to display in the form
@@ -722,17 +799,22 @@ class ExamMarkUpdateView(UpdateView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
 class ExamMarkDeleteView(DeleteView):
     model = ExamMark
     template_name = 'app_exammark/exammark_confirm_delete.html'
     success_url = reverse_lazy('exammark_list')
     
+
+@method_decorator(login_required, name='dispatch')
 class TeacherExamMarkDeleteView(DeleteView):
     model = ExamMark
     template_name = 'app_teacher/teacher_exammark_confirm_delete.html'
     success_url = reverse_lazy('teacher_exammark_list')
 
 
+@login_required(login_url='login')
 def exam_results(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
@@ -749,6 +831,7 @@ def exam_results(request):
         return render(request, 'app_exammark/exam_selection.html', {'exams': exams})
 
 
+@login_required(login_url='login')
 def class_results(request):
     if request.method == 'POST':
         course_class_id = request.POST.get('course_class_id')
@@ -808,7 +891,7 @@ def class_results(request):
 
 
 # Exam marks view for students
-@login_required
+@login_required(login_url='login')
 def exam_marks_view(request):
     form = ExamMarksFilterForm(request.POST or None)
     exam_marks = ExamMark.objects.filter(student=request.user.student)
