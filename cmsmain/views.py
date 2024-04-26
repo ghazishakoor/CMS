@@ -1,4 +1,7 @@
 
+from django.shortcuts import redirect
+from .models import ExamMark, Exam
+from django.shortcuts import render
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from functools import wraps
 from django.utils.decorators import method_decorator
 from django.db.models import Q
+from django.db import IntegrityError
 from django.core.exceptions import FieldDoesNotExist
 
 
@@ -66,8 +70,14 @@ def custom_redirect(request):
         elif user.groups.filter(name='teacher').exists():
             group = 'teacher'
             teacher = Teacher.objects.get(user=user)
+            teacher_classes = teacher.classes.all()
+            running_classes = teacher_classes.count()
+            class_list =[]
+            for klass in teacher_classes:
+                class_list.append(klass)
+                         
             subjects = teacher.subjects.all()
-            context = {'user': user, 'group': group, 'teacher': teacher, 'subjects': subjects}
+            context = {'user': user, 'group': group, 'teacher': teacher, 'subjects': subjects, 'teacher_classes': teacher_classes, 'running_classes': running_classes, 'class_list': class_list}
             return render(request, 'app_teacher/teacher_page.html/', context)
         
         elif user.groups.filter(name='admin').exists():
@@ -566,6 +576,23 @@ class CourseClassListView(ListView):
     template_name = 'app_courseclass/courseclass_list.html'
 
 
+# TeacherCourseClass Views --------------------------------
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
+class TeacherCourseClassListView(ListView):
+    model = CourseClass
+    template_name = 'app_courseclass/teacher_courseclass_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = self.request.user.teacher
+        teacher_courseclass = teacher.classes.all()
+        context = {'teacher': teacher,
+                   'teacher_courseclass': teacher_courseclass}
+        return context
+
+
+
 @method_decorator(login_required, name='dispatch')
 class CourseClassDetailView(DetailView):
     model = CourseClass
@@ -692,8 +719,7 @@ class TeacherExamMarkListView(ListView):
     context_object_name = 'teacher_exammark_list'
 
     def get_queryset(self):
-        # Assuming you have some way to access the logged-in teacher
-        # Adjust this according to your user model
+        # logged-in teacher
         logged_in_teacher = self.request.user.teacher
 
         # Filter the classes taught by the logged-in teacher
@@ -717,7 +743,7 @@ class ExamMarkDetailView(DetailView):
     model = ExamMark
     template_name = 'app_exammark/exammark_detail.html'
 
-
+'''
 @method_decorator(login_required, name='dispatch')
 @method_decorator(teacher_only, name='dispatch')
 class ExamMarkCreateView(LoginRequiredMixin, CreateView):
@@ -752,6 +778,57 @@ class ExamMarkCreateView(LoginRequiredMixin, CreateView):
             form.fields['student'].queryset = Student.objects.none()
         return form
 
+'''
+
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
+class ExamMarkCreateView(CreateView):
+    model = ExamMark
+    fields = ['exam', 'student', 'mark', 'remark']
+    template_name = 'app_exammark/exammark_create.html'
+    success_url = 'exammark_success'  # Specify the success URL here
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = self.request.user.teacher
+        course_classes = CourseClass.objects.filter(teacher=teacher)
+        exams = Exam.objects.filter(course_class__in=course_classes)
+        context['exams'] = exams
+        exam_id = self.request.GET.get('exam_id')
+        if exam_id:
+            exam = Exam.objects.get(pk=exam_id)
+            context['exam'] = exam
+            context['students'] = exam.student_set.all()
+        return context
+
+    def form_valid(self, form):
+        exam_id = self.request.POST.get('exam')
+        exam = Exam.objects.get(pk=exam_id)
+        students = exam.course_class.students.all()
+        for student in students:
+            mark_field_name = f'marks_{student.id}'
+            remark_field_name = f'remarks_{student.id}'
+            mark = self.request.POST.get(mark_field_name)
+            remark = self.request.POST.get(remark_field_name)
+            if mark is not None and mark != '':
+                try:
+                    # Try to create a new ExamMark instance
+                    exam_mark = ExamMark.objects.create(
+                        exam=exam, student=student, mark=mark, remark=remark)
+                    exam_mark.save()
+                except IntegrityError:
+                    # If a unique constraint violation occurs, update the existing ExamMark instance
+                    exam_mark = ExamMark.objects.get(
+                        exam=exam, student=student)
+                    exam_mark.mark = mark
+                    exam_mark.remark = remark
+                    exam_mark.save()
+
+        return redirect(self.success_url)
+
+
+
 
 def fetch_students(request):
     if request.method == 'GET' and 'exam_id' in request.GET:
@@ -762,7 +839,6 @@ def fetch_students(request):
         return JsonResponse(students_data, safe=False)
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)
-
 
 
 
@@ -808,6 +884,7 @@ class ExamMarkDeleteView(DeleteView):
     
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
 class TeacherExamMarkDeleteView(DeleteView):
     model = ExamMark
     template_name = 'app_teacher/teacher_exammark_confirm_delete.html'
@@ -832,6 +909,7 @@ def exam_results(request):
 
 
 @login_required(login_url='login')
+@teacher_only
 def class_results(request):
     if request.method == 'POST':
         course_class_id = request.POST.get('course_class_id')
@@ -862,22 +940,25 @@ def class_results(request):
         total_marks = [0] * len(next(iter(exam_marks_dict.values())))
 
         # Sum the marks for each student
-        for marks in exam_marks_dict.values():
-            total_marks = [total_marks[i] + marks[i] for i in range(len(marks))]
+        for exam, marks in exam_marks_dict.items():
+            for i in range(len(marks)):
+                total_marks[i] += marks[i] / exam.total * exam.weight  
 
         # Add the total marks to the 'Total' key
-        exam_marks_dict['Total'] = total_marks
-            
+        # exam_marks_dict['Total'] = total_marks
+        
+        # Add total marks at the beginning of a new dictionary
+        new_marks_dict = {'Total': total_marks, **exam_marks_dict}
         
         # Reverse the marks in the lists in exam_marks_dict so they pop in right order in the template
-        reverse_marks_dict = {key: value[::-1] for key, value in exam_marks_dict.items()}
+        reverse_new_marks_dict = {key: value[::-1] for key, value in new_marks_dict.items()}
 
         context = {
             'selected_class': selected_class,
             'students': students,
             'teacher': teacher,
             'exams': exams,
-            'reverse_marks_dict': reverse_marks_dict,  # Pass the dictionary to the template
+            'reverse_marks_dict': reverse_new_marks_dict,  # Pass the dictionary to the template
         }
         return render(request, 'app_exammark/class_results.html', context)
 

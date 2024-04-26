@@ -129,6 +129,8 @@ class AssignMark(models.Model):
 class Exam(models.Model):
     course_class = models.ForeignKey(CourseClass, on_delete=models.CASCADE, related_name='exams', null=True, blank=True)
     name = models.CharField(max_length=100)
+    total = models.IntegerField()
+    weight = models.IntegerField()
     description = models.TextField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='exams', null=True, blank=True)
     date = models.DateField()
@@ -141,7 +143,7 @@ class Exam(models.Model):
 class ExamMark(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='exammarks', null=True, blank=True)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exammarks')
-    mark = models.DecimalField(max_digits=5, decimal_places=2)
+    mark = models.IntegerField(null=True, blank=True)
     remark = models.TextField(null=True, blank=True)
     
     class Meta:

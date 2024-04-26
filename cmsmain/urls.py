@@ -78,6 +78,9 @@ urlpatterns = [
     path('courseclass/<int:pk>/delete/', views.CourseClassDeleteView.as_view(), name='courseclass_delete'),
     path('courseclass_success/', views.courseclass_success_view, name='courseclass_success'),
     
+    path('teacher_courseclass_list/', views.TeacherCourseClassListView.as_view(),
+         name='teacher_courseclass_list'),
+    
     path('location_list/', views.LocationListView.as_view(), name='location_list'),
     path('location_detail/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
     path('location_create/', views.LocationCreateView.as_view(), name='location_create'),

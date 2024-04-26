@@ -32,11 +32,20 @@
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card bg-info mb-3">
             <div class="card-header bg-info text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> <strong> {{teacher}} </strong>
+                <i class="fa-solid fa-users fa-lg"></i> <strong> Assigned Classes </strong>
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 300px;">
                 <p>Welcom <strong>{{ teacher }} !</strong></p>
-                <p><strong>{{user}}</strong> lands on <strong>{{group}}</strong> group.</p>
+                <strong>Total Classes Assigned</strong><h2 class="text-danger">{{ running_classes }}</h2>
+                <table class='table'>
+                    {% for value in class_list %}
+                        <tr>
+                            <td>
+                                {{value}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
     </div>

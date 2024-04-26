@@ -11,9 +11,12 @@
                     {{selected_exam.name}}
                 </div>
                 <div class="card-body shadow-lg bg-body rounded">
-                    <h3>Exam Results - {{ selected_exam.name }}</h3>
-                    <h4> Class - {{selected_class}}</h4>
-                    <h5> Exam Date - {{selected_exam.date}}</h5>
+                    <h4>Exam Results - {{ selected_exam.name }}</h4>
+                    <h5> Class - {{selected_class}}</h5>
+                    <h6> Term : {{selected_class.term}} (Starting : {{ selected_class.term.start_date }})</h6>
+                    <h6> Exam Date - {{selected_exam.date}}</h6>
+                    <h6> Score Total - {{selected_exam.total}}</h6>
+                    <h6> Exam Weight - {{selected_exam.weight}}%</h6>
                     <hr />
                     <table class="table">
                         <thead>
