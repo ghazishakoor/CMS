@@ -2,11 +2,39 @@ from django import forms
 from .models import *
 from django.contrib.auth.models import User, Group
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
+class TermForm(forms.ModelForm):
+    class Meta:
+        model = Term
+        fields = '__all__'
+        widgets = {
+            'start_date': DateInput,
+            'end_date': DateInput
+        }
+
+
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'
+        widgets = {
+            'date_of_birth': DateInput,
+            'enrolment_date': DateInput
+        }
+
 
 class StudentAssignmentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['user', 'subjects', 'student_number', 'first_name', 'last_name', 'phone', 'date_of_birth', 'nationality', 'passport_number', 'email', 'enrolment_date', 'picture']
+        widgets = {
+            'date_of_birth': DateInput,
+            'enrolment_date': DateInput
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,10 +57,21 @@ class StudentAssignmentForm(forms.ModelForm):
         )
 
 
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = '__all__'
+        widgets = {
+            'date_joined': DateInput
+        }
+
 class TeacherAssignmentForm(forms.ModelForm):
     class Meta:
         model = Teacher
         fields = ['user', 'subjects', 'first_name', 'last_name', 'phone', 'email', 'date_joined']
+        widgets = {
+            'date_joined': DateInput
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

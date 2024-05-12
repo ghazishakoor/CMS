@@ -142,7 +142,7 @@ def student_success_view(request):
 @method_decorator(admin_only, name='dispatch')
 class StudentUpdateView(UpdateView):
     model = Student
-    fields = '__all__'
+    form_class = StudentForm
     success_url = '/student_success/'
     
     def get_context_data(self, **kwargs):
@@ -211,7 +211,7 @@ class TeacherCreateView(CreateView):
 @method_decorator(login_required, name='dispatch')
 class TeacherUpdateView(UpdateView):
     model = Teacher
-    fields = '__all__'
+    form_class = TeacherForm
     success_url = '/teacher_success/'
 
     def get_context_data(self, **kwargs):
@@ -517,7 +517,7 @@ class AssignmentDeleteView(DeleteView):
     success_url = reverse_lazy('assignment_list')
     
 
-# Term Views
+# Term Views -----------------------------------------
 @method_decorator(login_required, name='dispatch')
 class TermListView(ListView):
     model = Term
@@ -533,7 +533,7 @@ class TermDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class TermCreateView(CreateView):
     model = Term
-    fields = '__all__'
+    form_class = TermForm
     success_url = '/term_success/'
 
     def get_context_data(self, **kwargs):
@@ -553,7 +553,7 @@ def term_success_view(request):
 @method_decorator(login_required, name='dispatch')
 class TermUpdateView(UpdateView):
     model = Term
-    fields = '__all__'
+    form_class = TermForm
     success_url = '/term_success/'
 
     def get_context_data(self, **kwargs):
