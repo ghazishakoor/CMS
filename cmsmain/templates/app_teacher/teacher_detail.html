@@ -18,9 +18,9 @@
                 <table class="table">
                     <tr><th>TEACHER</th></tr>
                     <tr><td>Name: <strong>{{teacher}}</strong></td></tr>
-                    <tr><td>Subjects: <strong>
+                    <tr><td>Subjects: <br /><strong>
                             {% for subject in subjects %}
-                                {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                                {{ subject.name }}{% if not forloop.last %}, {% endif %} <br />
                             {% endfor %}</strong>
                     </td></tr>
                     <tr><td>Phone: <strong>{{teacher.phone}}</strong></td></tr>

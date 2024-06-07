@@ -18,8 +18,10 @@ urlpatterns = [
     path('student_update/<int:pk>', views.StudentUpdateView.as_view(), name='student_update'),
     path('student/<int:pk>/delete/', views.StudentDeleteView.as_view(), name='student_delete'),
     path('student_success/', views.student_success_view, name='student_success'),
+    path('student_subject_marks/', views.StudentSubjectMarks, name='student_subject_marks'),
     
     path('exam_marks/', views.exam_marks_view, name='exam_marks'),
+    path("exam_search/", views.ExamSearchResultsView.as_view(), name="exam_search"),
     
     path("search/", views.SearchResultsView.as_view(), name="search"),
     

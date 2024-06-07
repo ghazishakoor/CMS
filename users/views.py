@@ -23,7 +23,7 @@ class SignUpView(View):
         if form.is_valid():
             form.save()
             messages.success(request, message="User Created Successfully!")
-            return redirect(reverse('login'))
+            return redirect(reverse('admin_page'))
 
         context = {'form': form}
         return render(request, self.template_name, context)

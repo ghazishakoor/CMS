@@ -1,0 +1,58 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<br />
+<h3 class="m-4 text-center">Assessment Search</h3>
+<br />
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-lg">
+            
+            <div class="card bg-light ms-4 me-4 mb-4">
+                <div class="card-header">
+                    <i class="fa-solid fa-list fa-lg"></i> Assessment Search Results
+                </div>
+                <div class="card-body">
+                    {% if object_list %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr class="fs-6">
+                                    <th> Exam</th>
+                                    <th> Teacher</th>
+                                    <th> Subject</th>
+                                    <th> Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for exam in object_list %}
+                                    <tr>
+                                        <td> {{exam.name}} </td>
+                                        <td> {{exam.course_class.teacher}} </td>
+                                        <td> {{exam.course_class.subject}} </td>
+                                        <td> {{exam.date}} </td>
+                                        <td> 
+                                            <a class="btn btn-success btn-sm" href="{% url 'exam_detail' exam.id %}">Detail</a>
+                                            <a class="btn btn-info btn-sm" href="{% url 'exam_update' exam.id %}">Update</a>
+                                            <a class="btn btn-danger btn-sm" href="{% url 'exam_delete' exam.id %}">Delete</a>
+                                        </td>    
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <a class="btn btn-info" href="{% url 'exam_list' %}">Back</a>
+                    </div>
+                    {% else %}
+                        <h4>Assessment Not Found!</h4>
+                        <a class="btn btn-info" href="{% url 'exam_list' %}">Back</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

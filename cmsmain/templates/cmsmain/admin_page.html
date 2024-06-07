@@ -12,33 +12,41 @@
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card border-primary mb-3" style="max-width: 20rem;">
             <div class="card-header bg-primary text-light">
-                <i class="fa-sharp fa-solid fa-bars fa-lg"></i> College Statistics
+                <i class="fa-solid fa-users fa-lg"></i> Students
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
                 <strong>Total Students Enrolled</strong><h2 class="text-danger">{{ total_students }}</h2>
-                <strong>Available Teachers</strong><h2 class="text-danger">{{ total_teachers }}</h2>
-                <strong>Total Running Classes</strong><h2 class="text-danger">{{ total_classes }}</h2>
+                <a href="/student_list/">Student List</a>
             </div>
         </div>
     </div>
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card border-info mb-3" style="max-width: 20rem;">
             <div class="card-header bg-info text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> To Design 
+                <i class="fa-solid fa-circle-info fa-lg"></i> Teachers 
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
-                <h3>Available</h3>
-                {% lorem %}
+                <strong>Available Teachers</strong><h2 class="text-danger">{{ total_teachers }}</h2>
+                <ul>
+                    {% for teacher in teachers %}
+                        <strong>{{teacher}}</strong><br />
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
     <div class="col-10 col-sm-7 col-md-4 col-xl-3">
         <div class="card border-success mb-3" style="max-width: 20rem;">
             <div class="card-header bg-success text-light">
-                <i class="fa-solid fa-address-card fa-lg"></i> {{user}}
+                <i class="fa-solid fa-people-group fa-lg"></i> Classes
             </div>
             <div class="card-body shadow-lg bg-body rounded card-text" style="height: 250px;">
-                    <p>Welcome <strong>{{user}}</strong> !</p>
+                <strong>Total Running Classes</strong><h2 class="text-danger">{{ total_classes }}</h2>
+                <ul>
+                    {% for class in classes %}
+                        <strong>{{class}}</strong><br />
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>

@@ -88,7 +88,7 @@ def custom_redirect(request):
             total_teachers = teachers.count()
             classes = CourseClass.objects.all()
             total_classes = classes.count()
-            context = {'user': user, 'group': group, 'students': students, 'total_students': total_students, 'teachers': teachers, 'total_teachers': total_teachers, 'total_classes': total_classes}
+            context = {'user': user, 'group': group, 'students': students, 'total_students': total_students, 'teachers': teachers, 'total_teachers': total_teachers, 'total_classes': total_classes, 'classes': classes}
             return render(request, 'cmsmain/admin_page.html/', context)
         # Add more conditions for other user groups as needed
         
@@ -169,6 +169,19 @@ class SearchResultsView(ListView):
         query = self.request.GET.get("q")
         object_list = Student.objects.filter(
             Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+        return object_list
+
+
+@method_decorator(login_required, name='dispatch')
+class ExamSearchResultsView(ListView):
+    model = Exam
+    template_name = 'app_assessments/examsearch.html'
+    
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        object_list = Exam.objects.filter(
+            Q(name__icontains=query)
         )
         return object_list
 
@@ -370,7 +383,7 @@ class ExamDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class ExamCreateView(CreateView):
     model = Exam
-    fields = '__all__'
+    form_class = ExamForm
     success_url = '/exam_success/'
 
     def get_context_data(self, **kwargs):
@@ -390,7 +403,7 @@ def exam_success_view(request):
 @method_decorator(login_required, name='dispatch')
 class ExamUpdateView(UpdateView):
     model = Exam
-    fields = '__all__'
+    form_class = ExamForm
     success_url = '/exam_success/'
     
     def get_context_data(self, **kwargs):
@@ -998,3 +1011,48 @@ def exam_marks_view(request):
         'student': student
     }
     return render(request, 'app_student/exam_marks.html', context)
+
+
+def StudentSubjectMarks(request):
+    student = request.user.student
+    form = StudentSubjectMarksFilterForm(request.POST or None, student=student)
+    
+    exam_marks = ExamMark.objects.filter(student=student)
+    
+    if request.method == 'POST' and form.is_valid():
+        subject = form.cleaned_data.get('subject')
+        if subject:
+            exam_marks = exam_marks.filter(exam__course_class__subject=subject)
+    
+    # Organize data for the table
+    subjects = set()
+    exams_dict = {}
+    totals_dict = {}
+
+    for mark in exam_marks:
+        subject = mark.exam.course_class.subject
+        subjects.add(subject)
+        if subject not in exams_dict:
+            exams_dict[subject] = {}
+        exams_dict[subject][mark.exam.name] = mark.mark
+        
+        # Calculate the weighted total marks for each subject
+        if subject not in totals_dict:
+            totals_dict[subject] = 0
+        totals_dict[subject] += mark.mark / mark.exam.total * mark.exam.weight
+        
+    all_exam_names = sorted({exam.name for mark in exam_marks for exam in [mark.exam]})
+    all_exams = Exam.objects.filter(name__in=all_exam_names).distinct()
+
+    context = {
+        'form': form,
+        'student': student,
+        'subjects': subjects,
+        'exams_dict': exams_dict,
+        'totals_dict': totals_dict,
+        'all_exam_names': all_exam_names,
+        'all_exams': all_exams
+    }
+    
+    return render(request, 'app_student/student_subject_marks.html', context)
+

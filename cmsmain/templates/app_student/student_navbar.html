@@ -9,17 +9,22 @@
     <div class="collapse navbar-collapse" id="navbarColor03">
       <ul class="navbar-nav me-auto">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><strong>Hello {{ request.user }}</strong></a>
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><strong>Hello {{ request.user.student }}</strong></a>
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
             <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
-            <a class="dropdown-item" href="#">Something else here</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#">Separated link</a>
           </div>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'exam_marks' %}">Marks</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><strong>Marks</strong></a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'exam_marks' %}">All Marks</a>
+            <a class="dropdown-item" href="{% url 'student_subject_marks' %}">Subject Marks</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
         </li>
       </ul>
     </div>

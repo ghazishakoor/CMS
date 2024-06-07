@@ -16,6 +16,15 @@ class TermForm(forms.ModelForm):
         }
 
 
+class ExamForm(forms.ModelForm):
+    class Meta:
+        model = Exam
+        fields = '__all__'
+        widgets = {
+            'date': DateInput
+        }
+
+
 
 class StudentForm(forms.ModelForm):
     class Meta:
@@ -101,8 +110,22 @@ class ExamMarksFilterForm(forms.Form):
     exam = forms.ModelChoiceField(queryset=Exam.objects.all(), required=False)
 
 
-class ContactForm(forms.ModelForm):
+class StudentSubjectMarksFilterForm(forms.Form):
+    subject = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-field'})
+    )
 
+    def __init__(self, *args, **kwargs):
+        student = kwargs.pop('student', None)
+        super(StudentSubjectMarksFilterForm, self).__init__(*args, **kwargs)
+        if student:
+            self.fields['subject'].queryset = Subject.objects.filter(
+                classes__in=student.classes.all()).distinct()
+
+
+class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         fields = ['full_name', 'phone', 'email', 'relationship']

@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<h3 class="mt-2 text-center">Exam Details</h3>
+<h3 class="mt-2 text-center">Assessment Details</h3>
 <hr />
 
 <div class="d-flex justify-content-center">
@@ -16,8 +16,8 @@
                 </div>
                 <div class="card-body shadow-lg bg-body rounded">
                     <table class="table">
-                        <tr><th>EXAM</th></tr>
-                        <tr><td>Exam: <strong>{{exam.name}}</strong></td></tr>
+                        <tr><th>ASSESSMENT</th></tr>
+                        <tr><td>Assessment Name: <strong>{{exam.name}}</strong></td></tr>
                         <tr><td>Class: <strong>{{exam.course_class.class_name}}</strong></td></tr>
                         <tr><td>Teacher: <strong>{{exam.course_class.teacher}}</strong></td></tr>
                         <tr><td>Subject: <strong>{{exam.course_class.subject}}</strong></td></tr>
