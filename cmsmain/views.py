@@ -1,7 +1,5 @@
 
-from django.shortcuts import redirect
-from .models import ExamMark, Exam
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -15,6 +13,7 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.db import IntegrityError
 from django.core.exceptions import FieldDoesNotExist
+from django.core.paginator import Paginator
 
 
 from .decorators import unauthenticated_user, allowed_users, admin_only, teacher_only, student_only
@@ -102,6 +101,9 @@ class StudentListView(ListView):
     model = Student
     template_name = 'app_student/student_list.html'
     paginate_by = 6
+
+    def get_queryset(self):
+        return Student.objects.all().order_by('first_name')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -614,7 +616,7 @@ class CourseClassDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         courseclass = self.get_object()
-        context["students"] = courseclass.students.all()
+        context["students"] = courseclass.students.order_by('first_name')
         return context
 
 
@@ -756,42 +758,6 @@ class ExamMarkDetailView(DetailView):
     model = ExamMark
     template_name = 'app_exammark/exammark_detail.html'
 
-'''
-@method_decorator(login_required, name='dispatch')
-@method_decorator(teacher_only, name='dispatch')
-class ExamMarkCreateView(LoginRequiredMixin, CreateView):
-    model = ExamMark
-    fields = ['exam', 'student', 'mark', 'remark']
-    template_name = 'app_exammark/exammark_create.html'
-    # Use reverse_lazy for dynamic URL resolution
-    success_url = reverse_lazy('exammark_success')
-
-    def form_valid(self, form):
-        form.instance.teacher = self.request.user.teacher
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        teacher = self.request.user.teacher
-        course_classes = CourseClass.objects.filter(teacher=teacher)
-        exams = Exam.objects.filter(course_class__in=course_classes)
-        context['exams'] = exams
-        return context
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Dynamically adjust queryset of 'student' field based on selected exam
-        exam_id = self.request.POST.get('exam')
-        if exam_id:
-            exam = get_object_or_404(Exam, pk=exam_id)
-            students = exam.course_class.students.all()
-            form.fields['student'].queryset = students
-        else:
-            # Empty queryset by default
-            form.fields['student'].queryset = Student.objects.none()
-        return form
-
-'''
 
 
 @method_decorator(login_required, name='dispatch')
@@ -806,13 +772,26 @@ class ExamMarkCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         teacher = self.request.user.teacher
         course_classes = CourseClass.objects.filter(teacher=teacher)
-        exams = Exam.objects.filter(course_class__in=course_classes)
-        context['exams'] = exams
+        context['course_classes'] = course_classes
+        context['teacher'] = teacher
+
+        course_class_id = self.request.GET.get('course_class_id')
         exam_id = self.request.GET.get('exam_id')
+
+        if course_class_id:
+            selected_course_class = CourseClass.objects.get(pk=course_class_id)
+            context['selected_course_class'] = selected_course_class
+            exams = Exam.objects.filter(course_class=selected_course_class)
+        else:
+            exams = Exam.objects.none()
+
+        context['exams'] = exams
+
         if exam_id:
             exam = Exam.objects.get(pk=exam_id)
             context['exam'] = exam
-            context['students'] = exam.student_set.all()
+            context['students'] = exam.course_class.students.all()
+            context['selected_exam_id'] = int(exam_id)
         return context
 
     def form_valid(self, form):
@@ -839,7 +818,6 @@ class ExamMarkCreateView(CreateView):
                     exam_mark.save()
 
         return redirect(self.success_url)
-
 
 
 
@@ -1013,6 +991,7 @@ def exam_marks_view(request):
     return render(request, 'app_student/exam_marks.html', context)
 
 
+# Student Marks subject-wise
 def StudentSubjectMarks(request):
     student = request.user.student
     form = StudentSubjectMarksFilterForm(request.POST or None, student=student)
@@ -1055,4 +1034,6 @@ def StudentSubjectMarks(request):
     }
     
     return render(request, 'app_student/student_subject_marks.html', context)
+
+
 

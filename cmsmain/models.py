@@ -131,7 +131,7 @@ class Exam(models.Model):
     name = models.CharField(max_length=100)
     total = models.IntegerField()
     weight = models.IntegerField()
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='exams', null=True, blank=True)
     date = models.DateField()
 

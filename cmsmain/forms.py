@@ -131,3 +131,24 @@ class ContactForm(forms.ModelForm):
         fields = ['full_name', 'phone', 'email', 'relationship']
 
 
+class SubjectExamForm(forms.Form):
+    subject = forms.ModelChoiceField(
+        queryset=Subject.objects.all(), label="Subject", required=True)
+    exam = forms.ModelChoiceField(
+        queryset=Exam.objects.none(), label="Exam", required=True)
+
+    def __init__(self, *args, **kwargs):
+        teacher = kwargs.pop('teacher', None)
+        super().__init__(*args, **kwargs)
+        if teacher:
+            self.fields['subject'].queryset = teacher.subjects.all()
+
+        if 'subject' in self.data:
+            try:
+                subject_id = int(self.data.get('subject'))
+                self.fields['exam'].queryset = Exam.objects.filter(
+                    course_class__subject_id=subject_id)
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['exam'].queryset = self.instance.subject.exam_set
