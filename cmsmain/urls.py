@@ -52,6 +52,8 @@ urlpatterns = [
     path('exam/<int:pk>/delete/', views.ExamDeleteView.as_view(), name='exam_delete'),
     path('exam_success/', views.exam_success_view, name='exam_success'),
     
+    path('teacher_exam_list/', views.TeacherExamListView.as_view(), name='teacher_exam_list'),
+    
     path('test_list/', views.TestListView.as_view(), name='test_list'),
     path('test_detail/<int:pk>/', views.TestDetailView.as_view(), name='test_detail'),
     path('test_create/', views.TestCreateView.as_view(), name='test_create'),

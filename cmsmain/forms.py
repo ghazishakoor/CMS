@@ -15,7 +15,6 @@ class TermForm(forms.ModelForm):
             'end_date': DateInput
         }
 
-
 class ExamForm(forms.ModelForm):
     class Meta:
         model = Exam
@@ -23,6 +22,14 @@ class ExamForm(forms.ModelForm):
         widgets = {
             'date': DateInput
         }
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+        if request and request.user.is_authenticated:
+            self.fields['course_class'].queryset = CourseClass.objects.filter(
+                teacher=request.user.teacher)
+
 
 
 

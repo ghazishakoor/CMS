@@ -1,0 +1,49 @@
+{% extends 'cmsmain/base.html' %}
+
+{% load static %}
+{% block content %}
+
+<h2 class="text-center mt-2">Assessment Management</h2>
+<hr class="mt-0 mb-2">
+<div class="d-flex justify-content-center">
+    <div class="row">
+        <div class="col col-md">
+            <div class="card card-body shadow-lg bg-body rounded">
+                <a class="btn btn-light" href="/exam_create/">Add a new Assessment</a>
+                <table class="table">
+                    <tr>
+                        <td>Assessment List for {{teacher}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                        <form class="d-flex float-end" action="{% url 'exam_search' %}" method="get">
+                            <input class="form-control me-sm-2" name="q" type="text" placeholder="Assessment name....">
+                            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Assessment</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for exam in teacher_exams %}
+                        <tr>
+                            <td>{{ exam.name }}</td>
+                            <td>{{ exam.course_class.subject }}</td>
+                            <td>{{ exam.date }}</td>
+                            <td>
+                                <a class="btn btn-success btn-sm" href="{% url 'exam_detail' exam.id %}">Detail</a>
+                                <a class="btn btn-info btn-sm" href="{% url 'exam_update' exam.id %}">Update</a>
+                                <a class="btn btn-danger btn-sm" href="{% url 'exam_delete' exam.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a class="btn btn-info" href="{% url 'custom_page' %}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

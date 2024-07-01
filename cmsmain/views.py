@@ -366,6 +366,24 @@ def contact_success_view(request):
 class ExamListView(ListView):
     model = Exam
     template_name = 'app_assessments/exam_list.html'
+    
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(teacher_only, name='dispatch')
+class TeacherExamListView(ListView):
+    model = Exam
+    template_name = 'app_assessments/teacher_exam_list.html'
+    context_object_name = 'teacher_exams'
+    
+    def get_queryset(self):
+        teacher = self.request.user.teacher
+        return Exam.objects.filter(course_class__teacher=teacher)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['teacher'] = self.request.user.teacher
+        return context
+        
 
 
 @method_decorator(login_required, name='dispatch')
@@ -388,10 +406,24 @@ class ExamCreateView(CreateView):
     form_class = ExamForm
     success_url = '/exam_success/'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['operation'] = 'create'
         return context
+
+
+def exam_success_view(request):
+    user = request.user
+    group_list = [group.name for group in user.groups.all()]
+    group = group_list[0]
+    context = {'user': user, 'group': group}
+    return render(request, 'app_assessments/exam_success.html', context)
+
 
 
 def exam_success_view(request):

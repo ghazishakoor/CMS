@@ -28,7 +28,7 @@
                         <tr><td>Location: <strong>{{exam.location.building}} - {{exam.location.room}}</td></tr>
                         <tr><td>Date: <strong>{{exam.date}}</strong></td></tr>
                     </table>
-                    <a href="/exam_list/" class="btn btn-primary float-end" role="button">Back</a>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary float-end" role="button">Back</a>
                 </div>
             </div>
         </div>
